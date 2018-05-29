@@ -1,0 +1,6 @@
+[GLOBAL]
+workdir = /tmp/workdir
+
+[REPOSITORIES]
+example1 = https://example1.com/example1.git
+example2 = https://example2.com/example2.git
