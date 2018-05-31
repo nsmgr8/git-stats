@@ -79,7 +79,6 @@ def clone(workdir, repo_name, repo_path):
     Clone current repository. It will fail silently if already cloned.
     """
     try:
-        return run(f'cd {workdir} && '
-                   f'git clone {repo_path} {repo_name}')
+        return run(f'git clone {repo_path} {repo_name}', workdir)
     except Exception:
         pass

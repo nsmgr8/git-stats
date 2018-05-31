@@ -5,14 +5,14 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(HERE)
 
 
-def run(cmd):
+def run(cmd, cwd=PROJECT_DIR):
     """
     A convenient wrapper around subprocess.run()
 
     :param cmd: shell command as string
     :return: subprocess.CompletedProcess
     """
-    return subprocess.run(cmd, check=True, shell=True, cwd=PROJECT_DIR,
+    return subprocess.run(cmd, check=True, shell=True, cwd=cwd,
                           stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                           universal_newlines=True)
 
@@ -27,4 +27,4 @@ def run_git(workdir, repo, cmd):
 
     :return: git output
     """
-    return run(f'cd {workdir}/{repo} && git {cmd}').stdout.strip()
+    return run(f'git {cmd}', os.path.join(workdir, repo)).stdout.strip()
