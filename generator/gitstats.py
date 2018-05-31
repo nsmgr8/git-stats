@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from functools import partial
@@ -24,15 +25,17 @@ class GitStats:
         """
         self._prepare_workdir()
 
-        repo_states = {}
+        self.load_repositories_info()
+        self.repo_states = {}
         repos = list(self.config.REPOSITORIES.items())
 
         with Pool(8) as p:
             for task in p.imap_unordered(partial(update_repo, self.repos_dir),
                                          repos):
-                repo_states.update(task)
+                self.repo_states.update(task)
 
-        logger.info(repo_states)
+        logger.info(self.repo_states)
+        self.save_repositories_info()
 
     def _prepare_workdir(self):
         self.workdir = self.config.GLOBAL['workdir']
@@ -43,6 +46,19 @@ class GitStats:
 
         os.makedirs(self.repos_dir, exist_ok=True)
         os.makedirs(self.data_dir, exist_ok=True)
+
+    def load_repositories_info(self):
+        repo_info_path = os.path.join(self.data_dir, 'repos.json')
+        try:
+            with open(repo_info_path) as fh:
+                self.previous_states = json.loads(fh.read())
+        except Exception:
+            self.previous_states = {}
+
+    def save_repositories_info(self):
+        repo_info_path = os.path.join(self.data_dir, 'repos.json')
+        with open(repo_info_path, 'w') as fh:
+            json.dump(self.repo_states, fh)
 
 
 def update_repo(workdir, repo):
