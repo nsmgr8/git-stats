@@ -1,3 +1,31 @@
-<p>
-  repositories works!
-</p>
+<div class="container-fluid">
+    <table class="table table-bordered table-striped table-sm mt-2">
+        <thead>
+            <tr>
+                <th>Repository</th>
+                <th>Last Author</th>
+                <th>Last Commit</th>
+                <th class="text-right">Last Commit Date</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr *ngFor="let repo of repos">
+                <th>
+                    <a [routerLink]="['/repo', repo.name]">
+                        {{ repo.name }}
+                    </a>
+                </th>
+                <td class="small text-muted">
+                    {{ repo.Author }}
+                </td>
+                <td class="small text-muted" [title]="repo.HEAD">
+                    {{ repo.HEAD | slice:0:10 }}
+                </td>
+                <td class="text-right">
+                    {{ repo.timestamp | date }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
