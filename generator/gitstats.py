@@ -48,8 +48,8 @@ def update_repo(workdir, repo):
     try:
         clone(workdir, *repo)
         run_git(workdir, repo[0], 'pull --tags')
-        p = run_git(workdir, repo[0], 'rev-parse HEAD')
-        return {repo[0]: p.stdout.strip()}
+        head = run_git(workdir, repo[0], 'rev-parse HEAD')
+        return {repo[0]: head}
     except Exception as e:
         logger.error(e)
         return {}
