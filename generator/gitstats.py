@@ -41,15 +41,24 @@ def update_repo(workdir, repo):
 
     :param workdir: working root folder
     :param repo: a tuple (repo_name, repo_origin_path)
-    :return: a dict {repo_name: current_head_sha}
+    :return: a dict {repo_name: current_head_info}
     """
     logger.debug(f'Current repository: {repo[0]} {repo[1]}')
 
     try:
         clone(workdir, *repo)
         run_git(workdir, repo[0], 'pull --tags')
-        head = run_git(workdir, repo[0], 'rev-parse HEAD')
-        return {repo[0]: head}
+        head, timestamp, author = run_git(
+            workdir, repo[0],
+            f'log --pretty=format:"%H %at %aN" -n1'
+        ).split(' ', 2)
+        return {
+            repo[0]: {
+                'HEAD': head,
+                'Date': int(timestamp),
+                'Author': author,
+            },
+        }
     except Exception as e:
         logger.error(e)
         return {}
