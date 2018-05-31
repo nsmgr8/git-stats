@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from datetime import datetime
 from functools import partial
 from multiprocessing import Pool
 
@@ -26,16 +27,20 @@ class GitStats:
         self._prepare_workdir()
 
         self.load_repositories_info()
-        self.repo_states = {}
+        self.repo_states = []
         repos = list(self.config.REPOSITORIES.items())
 
         with Pool(8) as p:
-            for task in p.imap_unordered(partial(update_repo, self.repos_dir),
-                                         repos):
-                self.repo_states.update(task)
+            for result in p.imap_unordered(partial(update_repo,
+                                                   self.repos_dir),
+                                           repos):
+                if result:
+                    self.repo_states.append(result)
 
         logger.info(self.repo_states)
         self.save_repositories_info()
+
+        self.save_last_update()
 
     def _prepare_workdir(self):
         self.workdir = self.config.GLOBAL['workdir']
@@ -53,12 +58,18 @@ class GitStats:
             with open(repo_info_path) as fh:
                 self.previous_states = json.loads(fh.read())
         except Exception:
-            self.previous_states = {}
+            self.previous_states = []
 
     def save_repositories_info(self):
         repo_info_path = os.path.join(self.data_dir, 'repos.json')
         with open(repo_info_path, 'w') as fh:
             json.dump(self.repo_states, fh)
+
+    def save_last_update(self):
+        last_update = int(datetime.utcnow().timestamp())
+        fpath = os.path.join(self.data_dir, 'last_update.json')
+        with open(fpath, 'w') as fh:
+            json.dump({'last_updated': last_update}, fh)
 
 
 def update_repo(workdir, repo):
@@ -79,11 +90,10 @@ def update_repo(workdir, repo):
             f'log --pretty=format:"%H %at %aN" -n1'
         ).split(' ', 2)
         return {
-            repo[0]: {
-                'HEAD': head,
-                'Date': int(timestamp),
-                'Author': author,
-            },
+            'name': repo[0],
+            'HEAD': head,
+            'date': int(timestamp),
+            'author': author,
         }
     except Exception as e:
         logger.error(e)

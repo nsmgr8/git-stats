@@ -25,15 +25,13 @@ export class RepositoriesComponent implements OnInit {
 
     setRepositories(data) {
         console.log(data);
-        const repo_names = Object.keys(data);
-        this.repos = repo_names.map(x => {
+        this.repos = data.map(x => {
             return {
-                name: x,
-                ...data[x],
-                timestamp: data[x].Date * 1000
+                ...x,
+                timestamp: x.date * 1000
             };
         }).sort((a, b) => {
-            return +b.Date - +a.Date;
+            return +b.date - +a.date;
         });
     }
 }
