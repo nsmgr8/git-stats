@@ -27,4 +27,4 @@ def run_git(workdir, repo, cmd):
 
     :return: git output
     """
-    return run(f'cd {workdir}/repos/{repo} && git {cmd}').stdout.strip()
+    return run(f'cd {workdir}/{repo} && git {cmd}').stdout.strip()

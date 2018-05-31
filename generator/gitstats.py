@@ -1,4 +1,5 @@
 import logging
+import os
 from functools import partial
 from multiprocessing import Pool
 
@@ -21,18 +22,27 @@ class GitStats:
         """
         Main runner
         """
-        self.workdir = self.config.GLOBAL['workdir']
-        logger.debug(f'Output folder {self.workdir}')
+        self._prepare_workdir()
 
         repo_states = {}
         repos = list(self.config.REPOSITORIES.items())
 
         with Pool(8) as p:
-            for task in p.imap_unordered(partial(update_repo, self.workdir),
+            for task in p.imap_unordered(partial(update_repo, self.repos_dir),
                                          repos):
                 repo_states.update(task)
 
         logger.info(repo_states)
+
+    def _prepare_workdir(self):
+        self.workdir = self.config.GLOBAL['workdir']
+        logger.debug(f'Output folder {self.workdir}')
+
+        self.repos_dir = os.path.join(self.workdir, 'repos')
+        self.data_dir = os.path.join(self.workdir, 'data')
+
+        os.makedirs(self.repos_dir, exist_ok=True)
+        os.makedirs(self.data_dir, exist_ok=True)
 
 
 def update_repo(workdir, repo):
@@ -69,8 +79,7 @@ def clone(workdir, repo_name, repo_path):
     Clone current repository. It will fail silently if already cloned.
     """
     try:
-        return run(f'mkdir -p {workdir}/repos && '
-                   f'cd {workdir}/repos && '
+        return run(f'cd {workdir} && '
                    f'git clone {repo_path} {repo_name}')
     except Exception:
         pass
