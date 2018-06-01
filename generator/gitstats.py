@@ -1,11 +1,12 @@
 import json
 import logging
 import os
+import re
 from datetime import datetime
 from functools import partial
 from multiprocessing import Pool
 
-from .utils import run, run_git
+from . import utils
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,7 @@ class GitStats:
                     self.repo_states.append(result)
 
         logger.info(self.repo_states)
-        self.save_repositories_info()
+        self.save_data(self.repo_states, 'repos.json')
 
         self.save_last_update()
 
@@ -52,6 +53,9 @@ class GitStats:
         os.makedirs(self.repos_dir, exist_ok=True)
         os.makedirs(self.data_dir, exist_ok=True)
 
+    def save_data(self, data, fname, folders=''):
+        utils.save_json(data, self.data_dir, fname, folders)
+
     def load_repositories_info(self):
         repo_info_path = os.path.join(self.data_dir, 'repos.json')
         try:
@@ -60,16 +64,9 @@ class GitStats:
         except Exception:
             self.previous_states = []
 
-    def save_repositories_info(self):
-        repo_info_path = os.path.join(self.data_dir, 'repos.json')
-        with open(repo_info_path, 'w') as fh:
-            json.dump(self.repo_states, fh)
-
     def save_last_update(self):
-        last_update = int(datetime.utcnow().timestamp())
-        fpath = os.path.join(self.data_dir, 'last_update.json')
-        with open(fpath, 'w') as fh:
-            json.dump({'last_updated': last_update}, fh)
+        last_updated = int(datetime.utcnow().timestamp())
+        self.save_data({'last_updated': last_updated}, 'last_update.json')
 
 
 def update_repo(workdir, repo):
@@ -84,8 +81,8 @@ def update_repo(workdir, repo):
 
     try:
         clone(workdir, *repo)
-        run_git(workdir, repo[0], 'pull --tags')
-        head, timestamp, author = run_git(
+        utils.run_git(workdir, repo[0], 'pull --tags')
+        head, timestamp, author = utils.run_git(
             workdir, repo[0],
             f'log --pretty=format:"%H %at %aN" -n1'
         ).split(' ', 2)
@@ -105,6 +102,6 @@ def clone(workdir, repo_name, repo_path):
     Clone current repository. It will fail silently if already cloned.
     """
     try:
-        return run(f'git clone {repo_path} {repo_name}', workdir)
+        return utils.run(f'git clone {repo_path} {repo_name}', workdir)
     except Exception:
         pass

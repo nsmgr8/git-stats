@@ -1,3 +1,4 @@
+import json
 import os
 import subprocess
 
@@ -28,3 +29,17 @@ def run_git(workdir, repo, cmd):
     :return: git output
     """
     return run(f'git {cmd}', os.path.join(workdir, repo)).stdout.strip()
+
+
+def empty_git_sha(workdir, repo):
+    return run_git(workdir, repo, 'mktree < /dev/null')
+
+
+def save_json(data, root, fname, folders=''):
+    if isinstance(folders, list):
+        folders = '/'.join(folders)
+    folders = folders.strip('/')
+    os.makedirs(os.path.join(root, folders), exist_ok=True)
+    fpath = os.path.join(root, folders, fname)
+    with open(fpath, 'w') as fh:
+        json.dump(data, fh)
