@@ -19,4 +19,8 @@ export class RepositoriesService {
     getRepositories() {
         return this.get('repos.json');
     }
+
+    getRepoSummary(name) {
+        return this.get(`${name}/summary.json`);
+    }
 }

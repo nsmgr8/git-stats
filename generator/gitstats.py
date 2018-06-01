@@ -41,6 +41,13 @@ class GitStats:
         logger.info(self.repo_states)
         self.save_data(self.repo_states, 'repos.json')
 
+        with Pool(8) as p:
+            for result in p.imap_unordered(
+                partial(summary, self.repos_dir),
+                [r['name'] for r in self.repo_states]
+            ):
+                self.save_data(result['data'], 'summary.json', result['repo'])
+
         self.save_last_update()
 
     def _prepare_workdir(self):
@@ -105,3 +112,39 @@ def clone(workdir, repo_name, repo_path):
         return utils.run(f'git clone {repo_path} {repo_name}', workdir)
     except Exception:
         pass
+
+
+def summary(workdir, repo):
+    empty_sha = utils.empty_git_sha(workdir, repo)
+    output = utils.run_git(workdir, repo, f'diff --shortstat {empty_sha}')
+    files, lines = re.search(r'(\d+) .*, (\d+) .*', output).groups()
+    authors = len(utils.run_git(workdir, repo, 'shortlog -s').splitlines())
+    commits = utils.run_git(workdir, repo, 'rev-list --count HEAD')
+    branches = len([x for x in utils.run_git(workdir, repo,
+                                             'branch -r').splitlines()
+                    if 'HEAD' not in x])
+    first_commit = int(utils.run_git(
+        workdir, repo,
+        'log --reverse --pretty=format:"%at"'
+    ).splitlines()[0])
+    latest_commit = int(utils.run_git(workdir, repo,
+                                      'log --pretty=format:"%at" -n1'))
+    age = int((latest_commit - first_commit) / 60 / 60 / 24)
+    try:
+        tags = len(utils.run_git(workdir, repo,
+                                 'show-ref --tags').splitlines())
+    except Exception:
+        tags = 0
+
+    return {
+        'data': [
+            {'key': 'files', 'value': files},
+            {'key': 'lines', 'value': lines, 'notes': 'includes empty lines'},
+            {'key': 'authors', 'value': authors},
+            {'key': 'commits', 'value': commits, 'notes': 'master only'},
+            {'key': 'branches', 'value': branches},
+            {'key': 'tags', 'value': tags},
+            {'key': 'age', 'value': age, 'note': 'active days since creation'},
+        ],
+        'repo': repo,
+    }
