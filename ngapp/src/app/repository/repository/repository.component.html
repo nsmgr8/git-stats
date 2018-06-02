@@ -6,9 +6,9 @@
         <div class="card-body">
             <div class="row text-center">
                 <div class="col mb-2"
-                    *ngFor="let row of summary">
-                    <div class="card-body h1 text-dark alert-success"
-                        [title]="row.notes || ''">
+                     [ngbTooltip]="row.notes | titlecase"
+                     *ngFor="let row of summary">
+                    <div class="card-body h1 text-dark alert-success">
                         {{ row.value | number }}
                     </div>
                     <div class="card-footer">
