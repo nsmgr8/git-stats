@@ -4,6 +4,8 @@ import logging
 from .config import Config
 from .gitstats import GitStats
 
+log_format = '[%(levelname)s] %(asctime)s %(filename)s:%(lineno)d %(message)s'
+
 
 def parse_command_args():
     parser = argparse.ArgumentParser(__doc__)
@@ -13,7 +15,7 @@ def parse_command_args():
     args = parser.parse_args()
 
     if args.verbose:
-        logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(level=logging.DEBUG, format=log_format)
 
     return args
 
