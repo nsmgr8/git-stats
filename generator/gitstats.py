@@ -27,6 +27,12 @@ class GitStats:
         """
         self._prepare_workdir()
 
+        self.update_repos()
+        self.repo_summary()
+
+        self.save_last_update()
+
+    def update_repos(self):
         self.load_repositories_info()
         self.repo_states = []
         repos = list(self.config.REPOSITORIES.items())
@@ -41,14 +47,14 @@ class GitStats:
         logger.info(self.repo_states)
         self.save_data(self.repo_states, 'repos.json')
 
+    def repo_summary(self):
         with Pool(8) as p:
             for result in p.imap_unordered(
                 partial(summary, self.repos_dir),
                 [r['name'] for r in self.repo_states]
             ):
+                logger.info(result)
                 self.save_data(result['data'], 'summary.json', result['repo'])
-
-        self.save_last_update()
 
     def _prepare_workdir(self):
         self.workdir = self.config.GLOBAL['workdir']
