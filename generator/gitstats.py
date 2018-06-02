@@ -54,6 +54,9 @@ class GitStats:
         repo_states = {**prev}
         repo_states.update(curr)
 
+        if self.config.force:
+            self.repos = list(repo_states)
+
         logger.info(repo_states)
         self.save_data(list(repo_states.values()), 'repos.json')
 

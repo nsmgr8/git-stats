@@ -8,17 +8,20 @@ from .gitstats import GitStats
 def parse_command_args():
     parser = argparse.ArgumentParser(__doc__)
     parser.add_argument('-v', '--verbose', action='store_true')
+    parser.add_argument('-f', '--force', action='store_true')
 
     args = parser.parse_args()
 
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
 
+    return args
+
 
 def main():
-    parse_command_args()
+    args = parse_command_args()
 
-    config = Config()
+    config = Config(**vars(args))
     stats = GitStats(config)
     stats.run()
 

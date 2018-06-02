@@ -10,11 +10,12 @@ class Config:
     """
     _config = None
 
-    def __init__(self, config_path=''):
+    def __init__(self, *, config_path='', force=False, **kwargs):
         """
         :param config_path: if not given, defaults to project root config.ini
             file
         """
+        self.force = force
         self.config_path = config_path or os.path.join(PROJECT_DIR,
                                                        'config.ini')
 
