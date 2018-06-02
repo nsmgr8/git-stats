@@ -209,7 +209,7 @@ def activity(workdir, repo):
         else:
             timestamp, revision, author = line.split(' ', 2)
             revisions.append(revision)
-            data['commit'] = 1
+            data['commits'] = 1
 
             timestamp = int(timestamp)
             date = datetime.fromtimestamp(timestamp)

@@ -8,8 +8,8 @@
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th class="text-right" (click)="toggleOrder('commit')">
-                        <span *ngIf="order.field === 'commit'">
+                    <th class="text-right" (click)="toggleOrder('commits')">
+                        <span *ngIf="order.field === 'commits'">
                             <span *ngIf="order.direction === -1">
                                 &#x25B2;
                             </span>
@@ -80,7 +80,7 @@
             <tbody>
                 <tr *ngFor="let author of authors">
                     <th>{{ author.author }}</th>
-                    <td class="text-right">{{ author.commit | number }}</td>
+                    <td class="text-right">{{ author.commits | number }}</td>
                     <td class="text-right text-success">{{ author.insertions | number }}</td>
                     <td class="text-right text-danger">{{ author.deletions | number }}</td>
                     <td class="text-right text-muted">{{ author.first_commit * 1000 | date }}</td>

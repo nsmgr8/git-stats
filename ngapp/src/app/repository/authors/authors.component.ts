@@ -14,7 +14,7 @@ export class AuthorsComponent implements OnInit {
     authors;
     repo;
     order = {
-        field: 'commit',
+        field: 'commits',
         direction: 1
     };
 
@@ -42,8 +42,8 @@ export class AuthorsComponent implements OnInit {
         this.activity = data;
         const authors = Object.keys(data.by_authors);
         this.authors = authors.map(a => {
-            let {commit, insertions, deletions} = data.by_authors[a].yearly;
-            commit = Object.values(commit).reduce((acc: number, val: number) => acc + val, 0);
+            let {commits, insertions, deletions} = data.by_authors[a].yearly;
+            commits = Object.values(commits).reduce((acc: number, val: number) => acc + val, 0);
             if (insertions) {
                 insertions = Object.values(insertions).reduce((acc: number, val: number) => acc + val, 0);
             }
@@ -52,13 +52,13 @@ export class AuthorsComponent implements OnInit {
             }
             return {
                 author: a,
-                commit,
+                commits,
                 insertions,
                 deletions,
                 ...data.authors_age[a]
             };
         }).sort((a, b) => {
-            return b.commit - a.commit;
+            return b.commits - a.commits;
         });
     }
 
