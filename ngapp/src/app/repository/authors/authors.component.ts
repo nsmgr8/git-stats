@@ -13,6 +13,10 @@ export class AuthorsComponent implements OnInit {
     activity;
     authors;
     repo;
+    order = {
+        field: 'commit',
+        direction: 1
+    };
 
     constructor(
         public repoService: RepositoriesService,
@@ -58,4 +62,14 @@ export class AuthorsComponent implements OnInit {
         });
     }
 
+    toggleOrder(field) {
+        if (this.order.field === field) {
+            this.order.direction = -1 * this.order.direction;
+        } else {
+            this.order = {field, direction: 1};
+        }
+        this.authors = this.authors.sort((a, b) => {
+            return this.order.direction * (b[field] - a[field]);
+        });
+    }
 }

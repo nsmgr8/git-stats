@@ -4,16 +4,76 @@
     </div>
 
     <div class="table-responsive">
-        <table class="table table-sm table-bordered table-striped">
+        <table class="authors table table-sm table-bordered table-striped">
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th class="text-right">Commits</th>
-                    <th class="text-right">Lines Added</th>
-                    <th class="text-right">Lines Removed</th>
-                    <th class="text-right">First Commit</th>
-                    <th class="text-right">Last Commit</th>
-                    <th class="text-right">Age (Days)</th>
+                    <th class="text-right" (click)="toggleOrder('commit')">
+                        <span *ngIf="order.field === 'commit'">
+                            <span *ngIf="order.direction === -1">
+                                &#x25B2;
+                            </span>
+                            <span *ngIf="order.direction === 1">
+                                &#x25BC;
+                            </span>
+                        </span>
+                        Commits
+                    </th>
+                    <th class="text-right" (click)="toggleOrder('insertions')">
+                        <span *ngIf="order.field === 'insertions'">
+                            <span *ngIf="order.direction === -1">
+                                &#x25B2;
+                            </span>
+                            <span *ngIf="order.direction === 1">
+                                &#x25BC;
+                            </span>
+                        </span>
+                        Lines Added
+                    </th>
+                    <th class="text-right" (click)="toggleOrder('deletions')">
+                        <span *ngIf="order.field === 'deletions'">
+                            <span *ngIf="order.direction === -1">
+                                &#x25B2;
+                            </span>
+                            <span *ngIf="order.direction === 1">
+                                &#x25BC;
+                            </span>
+                        </span>
+                        Lines Removed
+                    </th>
+                    <th class="text-right" (click)="toggleOrder('first_commit')">
+                        <span *ngIf="order.field === 'first_commit'">
+                            <span *ngIf="order.direction === -1">
+                                &#x25B2;
+                            </span>
+                            <span *ngIf="order.direction === 1">
+                                &#x25BC;
+                            </span>
+                        </span>
+                        First Commit
+                    </th>
+                    <th class="text-right" (click)="toggleOrder('last_commit')">
+                        <span *ngIf="order.field === 'last_commit'">
+                            <span *ngIf="order.direction === -1">
+                                &#x25B2;
+                            </span>
+                            <span *ngIf="order.direction === 1">
+                                &#x25BC;
+                            </span>
+                        </span>
+                        Last Commit
+                    </th>
+                    <th class="text-right" (click)="toggleOrder('days')">
+                        <span *ngIf="order.field === 'days'">
+                            <span *ngIf="order.direction === -1">
+                                &#x25B2;
+                            </span>
+                            <span *ngIf="order.direction === 1">
+                                &#x25BC;
+                            </span>
+                        </span>
+                        Age (Days)
+                    </th>
                 </tr>
             </thead>
 
