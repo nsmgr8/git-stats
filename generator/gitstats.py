@@ -33,8 +33,8 @@ class GitStats:
         self.save_last_update()
 
     def update_repos(self):
-        self.load_repositories_info()
-        self.repo_states = []
+        prev_states = self.load_repositories_info()
+        repo_states = []
         repos = list(self.config.REPOSITORIES.items())
 
         with Pool(8) as p:
@@ -42,17 +42,25 @@ class GitStats:
                                                    self.repos_dir),
                                            repos):
                 if result:
-                    self.repo_states.append(result)
+                    repo_states.append(result)
 
-        logger.info(self.repo_states)
-        self.save_data(self.repo_states, 'repos.json')
+        prev = {r['name']: r for r in prev_states}
+        curr = {r['name']: r for r in repo_states}
+        self.repos = []
+        for repo in curr:
+            if prev.get(repo, {}).get('HEAD') != curr[repo]['HEAD']:
+                self.repos.append(repo)
+
+        repo_states = {**prev}
+        repo_states.update(curr)
+
+        logger.info(repo_states)
+        self.save_data(list(repo_states.values()), 'repos.json')
 
     def repo_summary(self):
         with Pool(8) as p:
-            for result in p.imap_unordered(
-                partial(summary, self.repos_dir),
-                [r['name'] for r in self.repo_states]
-            ):
+            for result in p.imap_unordered(partial(summary, self.repos_dir),
+                                           self.repos):
                 logger.info(result)
                 self.save_data(result['data'], 'summary.json', result['repo'])
 
@@ -70,12 +78,11 @@ class GitStats:
         utils.save_json(data, self.data_dir, fname, folders)
 
     def load_repositories_info(self):
-        repo_info_path = os.path.join(self.data_dir, 'repos.json')
         try:
-            with open(repo_info_path) as fh:
-                self.previous_states = json.loads(fh.read())
+            with open(os.path.join(self.data_dir, 'repos.json')) as fh:
+                return json.loads(fh.read())
         except Exception:
-            self.previous_states = []
+            return []
 
     def save_last_update(self):
         last_updated = int(datetime.utcnow().timestamp())
@@ -150,7 +157,7 @@ def summary(workdir, repo):
             {'key': 'commits', 'value': commits, 'notes': 'master only'},
             {'key': 'branches', 'value': branches},
             {'key': 'tags', 'value': tags},
-            {'key': 'age', 'value': age, 'note': 'active days since creation'},
+            {'key': 'age', 'value': age, 'notes': 'active days since creation'},
         ],
         'repo': repo,
     }
