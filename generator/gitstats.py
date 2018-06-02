@@ -1,7 +1,9 @@
 import json
 import logging
+import math
 import os
 import re
+from collections import defaultdict
 from datetime import datetime
 from functools import partial
 from multiprocessing import Pool
@@ -29,6 +31,7 @@ class GitStats:
 
         self.update_repos()
         self.repo_summary()
+        self.repo_activity()
 
         self.save_last_update()
 
@@ -66,6 +69,13 @@ class GitStats:
                                            self.repos):
                 logger.info(result)
                 self.save_data(result['data'], 'summary.json', result['repo'])
+
+    def repo_activity(self):
+        with Pool(8) as p:
+            for result in p.imap_unordered(partial(activity, self.repos_dir),
+                                           self.repos):
+                logger.info(result)
+                self.save_data(result['data'], 'activity.json', result['repo'])
 
     def _prepare_workdir(self):
         self.workdir = self.config.GLOBAL['workdir']
@@ -145,7 +155,7 @@ def summary(workdir, repo):
     ).splitlines()[0])
     latest_commit = int(utils.run_git(workdir, repo,
                                       'log --pretty=format:"%at" -n1'))
-    age = int((latest_commit - first_commit) / 60 / 60 / 24)
+    age = math.ceil((latest_commit - first_commit) / 60 / 60 / 24)
     try:
         tags = len(utils.run_git(workdir, repo,
                                  'show-ref --tags').splitlines())
@@ -162,5 +172,87 @@ def summary(workdir, repo):
             {'key': 'tags', 'value': tags},
             {'key': 'age', 'value': age, 'notes': 'active days since creation'},
         ],
+        'repo': repo,
+    }
+
+
+def activity(workdir, repo):
+    hour_of_week = defaultdict(lambda: defaultdict(int))
+    by_time = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
+    authors = defaultdict(
+        lambda: defaultdict(
+            lambda: defaultdict(
+                lambda: defaultdict(int)
+            )
+        )
+    )
+    authors_age = defaultdict(lambda: defaultdict(int))
+
+    revisions = []
+    for line in utils.run_git(
+        workdir, repo,
+        'log --shortstat --pretty=format:"%at %T %aN" HEAD'
+    ).splitlines():
+        line = line.strip()
+        if not line:
+            continue
+
+        data = {}
+        m = re.search(r'\d+ files? changed,', line)
+        if m:
+            m = re.search(r' (\d+) insert', line)
+            if m:
+                data['insertions'] = int(m.groups()[0])
+            m = re.search(r' (\d+) delet', line)
+            if m:
+                data['deletions'] = int(m.groups()[0])
+        else:
+            timestamp, revision, author = line.split(' ', 2)
+            revisions.append(revision)
+            data['commit'] = 1
+
+            timestamp = int(timestamp)
+            date = datetime.fromtimestamp(timestamp)
+            month = date.strftime('%Y-%m')
+            day = date.strftime('%Y-%m-%d')
+            week = date.strftime('%Y-%V')
+
+            hour_of_week[date.weekday()][date.hour] += 1
+
+            if (
+                authors_age[author]['first_commit'] == 0 or
+                authors_age[author]['first_commit'] > timestamp
+            ):
+                authors_age[author]['first_commit'] = timestamp
+
+            if authors_age[author]['last_commit'] < timestamp:
+                authors_age[author]['last_commit'] = timestamp
+
+        for ktype, kvalue in (
+            ('yearly', date.year),
+            ('monthly', month),
+            ('daily', day),
+            ('weekly', week),
+            ('at_hour', date.hour),
+        ):
+            for key, value in data.items():
+                by_time[ktype][key][kvalue] += value
+                authors[author][ktype][key][kvalue] += value
+
+    for author in authors_age:
+        authors_age[author]['days'] = math.ceil((
+            authors_age[author]['last_commit'] -
+            authors_age[author]['first_commit']
+        ) / 60 / 60 / 24)
+
+    return {
+        'data': {
+            'by_time': {k: dict(v) for k, v in by_time.items()},
+            'hour_of_week': {k: dict(v) for k, v in hour_of_week.items()},
+            'by_authors': {k: {kk: dict(vv) for kk, vv in v.items()}
+                           for k, v in authors.items()},
+            'authors_age': {k: dict(v) for k, v in authors_age.items()},
+        },
+        'revisions': revisions,
         'repo': repo,
     }
