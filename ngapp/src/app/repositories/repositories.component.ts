@@ -24,7 +24,6 @@ export class RepositoriesComponent implements OnInit {
     }
 
     setRepositories(data) {
-        console.log(data);
         this.repos = data.map(x => {
             return {
                 ...x,

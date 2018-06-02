@@ -23,4 +23,8 @@ export class RepositoriesService {
     getRepoSummary(name) {
         return this.get(`${name}/summary.json`);
     }
+
+    getRepoActivity(name) {
+        return this.get(`${name}/activity.json`);
+    }
 }

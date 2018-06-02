@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { Routes, RouterModule, ExtraOptions } from '@angular/router';
 
 import { RepositoriesComponent } from './repositories/repositories.component';
 import { RepositoryComponent } from './repository/repository/repository.component';
@@ -27,8 +27,13 @@ const routes: Routes = [
     }
 ];
 
+export const routingConfiguration: ExtraOptions = {
+    paramsInheritanceStrategy: 'always'
+};
+
+
 @NgModule({
-    imports: [RouterModule.forRoot(routes)],
+    imports: [RouterModule.forRoot(routes, routingConfiguration)],
     exports: [RouterModule]
 })
 export class AppRoutingModule { }
