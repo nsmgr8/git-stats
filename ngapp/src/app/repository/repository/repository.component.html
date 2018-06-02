@@ -1,21 +1,45 @@
 <div class="container-fluid mt-2">
     <div class="card">
-        <div class="card-header">
+        <div class="card-header bg-info text-white">
             Repository: <strong>{{ repo }}</strong>
         </div>
-        <div class="card-body">
+
+        <div class="card-body table-info">
             <div class="row text-center">
-                <div class="col mb-2"
-                     [ngbTooltip]="row.notes | titlecase"
-                     *ngFor="let row of summary">
-                    <div class="card-body h1 text-dark alert-success">
-                        {{ row.value | number }}
-                    </div>
-                    <div class="card-footer">
-                        {{ row.key | titlecase }}
-                    </div>
+                <div class="col mb-2" *ngFor="let row of summary">
+
+                    <a class="summary-card"
+                       [routerLink]="['/repo', repo, row.key]"
+                       routerLinkActive="active"
+                       #rla="routerLinkActive"
+                       [ngbTooltip]="row.notes | titlecase">
+
+                        <div class="card shadow">
+                            <div class="card-body text-dark"
+                                 [ngClass]="{
+                                 'alert-success': !rla.isActive,
+                                 'alert-warning': rla.isActive
+                                 }">
+                                <div class="h1">
+                                    {{ row.value | number }}
+                                </div>
+                            </div>
+
+                            <div class="card-footer"
+                                 [ngClass]="{
+                                 'bg-success text-white': !rla.isActive,
+                                 'bg-warning text-dark': rla.isActive
+                                 }">
+                                {{ row.key | titlecase }}
+                            </div>
+                        </div>
+
+                    </a>
+
                 </div>
             </div>
         </div>
     </div>
+
+    <router-outlet></router-outlet>
 </div>
