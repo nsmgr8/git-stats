@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { NgxEchartsModule } from 'ngx-echarts';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -35,6 +36,7 @@ import { PeriodPipe } from './pipes/period.pipe';
         BrowserModule,
         HttpClientModule,
         NgbModule.forRoot(),
+        NgxEchartsModule,
         AppRoutingModule
     ],
     providers: [],

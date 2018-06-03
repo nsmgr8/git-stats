@@ -31,4 +31,8 @@ export class RepositoriesService {
     getLines(name) {
         return this.get(`${name}/lines.json`);
     }
+
+    getFilesHistory(name) {
+        return this.get(`${name}/files-history.json`);
+    }
 }

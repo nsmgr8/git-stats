@@ -1819,6 +1819,12 @@ ecc-jsbn@~0.1.1:
   dependencies:
     jsbn "~0.1.0"
 
+echarts@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/echarts/-/echarts-4.1.0.tgz#d588c95f73c1a9928b9c73d5b769751c3185bcdc"
+  dependencies:
+    zrender "4.0.4"
+
 ee-first@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
@@ -3967,6 +3973,12 @@ neo-async@^2.5.0:
 next-tick@1:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/next-tick/-/next-tick-1.0.0.tgz#ca86d1fe8828169b0120208e3dc8424b9db8342c"
+
+ngx-echarts@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/ngx-echarts/-/ngx-echarts-3.0.0.tgz#a420351a47bc0b07f9d2af666f797e41567061ee"
+  dependencies:
+    tslib "^1.9.0"
 
 no-case@^2.2.0:
   version "2.3.2"
@@ -6504,3 +6516,7 @@ yn@^2.0.0:
 zone.js@^0.8.26:
   version "0.8.26"
   resolved "https://registry.yarnpkg.com/zone.js/-/zone.js-0.8.26.tgz#7bdd72f7668c5a7ad6b118148b4ea39c59d08d2d"
+
+zrender@4.0.4:
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/zrender/-/zrender-4.0.4.tgz#910e60d888f00c9599073f23758dd23345fe48fd"
