@@ -85,15 +85,27 @@ class GitStats:
         return revisions
 
     def repo_files_history(self, revisions):
+        fname = 'files-history.json'
+
         for repo, revs in revisions.items():
-            data = {}
+            cache = self.load_data(fname, repo)
+            revs_to_check = []
+            if cache:
+                data = cache
+                revs_to_check = [rev for rev in revs
+                                 if rev not in revs]
+            else:
+                data = {}
+                revs_to_check = revs
+
             with Pool(num_pools) as p:
                 for result in p.imap_unordered(partial(num_files,
                                                        self.repos_dir, repo),
-                                               revs):
+                                               revs_to_check):
                     data.update(result)
+
             logger.info(data)
-            self.save_data(data, 'files-history.json', repo)
+            self.save_data(data, fname, repo)
 
     def repo_lines(self):
         with Pool(num_pools) as p:
@@ -115,6 +127,14 @@ class GitStats:
 
     def save_data(self, data, fname, folders=''):
         utils.save_json(data, self.data_dir, fname, folders)
+
+    def load_data(self, fname, folders=''):
+        try:
+            fpath = os.path.join(self.data_dir, folders, fname)
+            with open(fpath) as fh:
+                return json.loads(fh.read())
+        except Exception:
+            return None
 
     def load_repositories_info(self):
         try:
