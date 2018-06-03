@@ -43,8 +43,10 @@ export class AuthorsComponent implements OnInit {
         this.setAuthors(data);
         this.author_of_the_periods = [
             'weekly', 'monthly', 'yearly'
-        ].map(period => ({type: period, value: this.setAuthorOfThePeriod(data, period)}));
-        console.log(this.author_of_the_periods);
+        ].map(period => ({
+            type: period,
+            value: this.setAuthorOfThePeriod(data, period)
+        }));
     }
 
     setAuthors(data) {
@@ -86,8 +88,7 @@ export class AuthorsComponent implements OnInit {
         const rows = {};
         authors.forEach(a => {
             const {commits, insertions, deletions} = data.by_authors[a][period];
-            const keys = Object.keys(commits);
-            keys.forEach(key => {
+            Object.keys(commits).forEach(key => {
                 const row = {
                     author: a,
                     commits: commits[key],
