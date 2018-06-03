@@ -11,7 +11,7 @@ from multiprocessing import Pool
 from . import utils
 
 logger = logging.getLogger(__name__)
-num_pools = 8
+num_pools = 2 * os.cpu_count() - 1
 
 
 class GitStats:

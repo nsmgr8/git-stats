@@ -13,7 +13,7 @@ def run(cmd, cwd=PROJECT_DIR):
     :param cmd: shell command as string
     :return: subprocess.CompletedProcess
     """
-    return subprocess.run(cmd, check=True, shell=True, cwd=cwd,
+    return subprocess.run(f'nice -n 20 {cmd}', check=True, shell=True, cwd=cwd,
                           stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                           universal_newlines=True)
 
