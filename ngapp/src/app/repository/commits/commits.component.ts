@@ -16,6 +16,8 @@ export class CommitsComponent implements OnInit {
     weekdays_total;
     total_commit;
 
+    commitsByPeriod;
+
     constructor(
         public repoService: RepositoriesService,
         public route: ActivatedRoute
@@ -39,6 +41,10 @@ export class CommitsComponent implements OnInit {
     setRepoActivity(data) {
         this.activity = data;
         this.setHourOfWeek(data);
+        this.commitsByPeriod = ['yearly', 'monthly'].map(period => ({
+            type: period,
+            value: this.setCommitPeriods(data, period)
+        }));
     }
 
     setHourOfWeek(data) {
@@ -73,6 +79,19 @@ export class CommitsComponent implements OnInit {
         this.total_commit = this.weekdays_total.reduce((acc, val) => val ? acc + val : acc, 0);
     }
 
+    setCommitPeriods(data, period) {
+        const {commits, insertions, deletions} = data.by_time[period];
+        return Object.keys(commits).sort((a, b) => {
+            return b.localeCompare(a);
+        }).map(key => {
+            return {
+                period: key,
+                commits: commits[key],
+                insertions: insertions && insertions[key],
+                deletions: deletions && deletions[key]
+            };
+        });
+    }
 }
 
 const makeColor = function(value, max) {

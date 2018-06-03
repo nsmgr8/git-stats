@@ -4,7 +4,7 @@
     </div>
 
     <div class="table-responsive">
-        <table class="table table-sm table-bordered text-right">
+        <table class="table table-sm table-bordered text-right mb-0">
 
             <thead>
                 <tr>
@@ -57,5 +57,37 @@
             </tfoot>
 
         </table>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6" *ngFor="let period of commitsByPeriod">
+        <div class="card mt-2">
+            <div class="card-header bg-secondary text-white">
+                {{ period.type | titlecase }} Commits
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Period</th>
+                            <th class="text-right">Commits</th>
+                            <th class="text-right">Lines Added</th>
+                            <th class="text-right">Lines Removed</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr *ngFor="let row of period.value">
+                            <td>{{ row.period | period:period.type }}</td>
+                            <td class="text-right">{{ row.commits }}</td>
+                            <td class="text-right text-success">{{ row.insertions }}</td>
+                            <td class="text-right text-danger">{{ row.deletions }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
