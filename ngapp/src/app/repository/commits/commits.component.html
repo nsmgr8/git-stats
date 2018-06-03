@@ -1,3 +1,61 @@
-<p>
-  commits works!
-</p>
+<div class="card mt-2">
+    <div class="card-header bg-secondary text-white">
+        Number of Commits by Hour of Week
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-sm table-bordered text-right">
+
+            <thead>
+                <tr>
+                    <th>Hour/Day</th>
+                    <th>Monday</th>
+                    <th>Tuesday</th>
+                    <th>Wednesday</th>
+                    <th>Thursday</th>
+                    <th>Friday</th>
+                    <th>Saturday</th>
+                    <th>Sunday</th>
+                    <th colspan="2">Total</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let hour of hour_of_week; let i=index">
+                    <th>
+                        {{ i | number:'2.0' }}:00 -
+                        {{ i + 1 | number:'2.0' }}:00
+                    </th>
+                    <td *ngFor="let week of hour"
+                        [style.backgroundColor]="week.color">
+                        {{ week.value }}
+                    </td>
+                    <th class="table-active">
+                        <small class="text-muted">
+                            {{ activity.by_time.at_hour.commits[i] / total_commit | percent }}
+                        </small>
+                    </th>
+                    <th class="table-active">
+                        {{ activity.by_time.at_hour.commits[i] }}
+                    </th>
+                </tr>
+            </tbody>
+
+            <tfoot>
+                <tr class="table-active">
+                    <th>Total</th>
+                    <th *ngFor="let commit of weekdays_total">
+                        {{ commit }}<br>
+                        <small class="text-muted">
+                            {{ commit / total_commit | percent:'.1' }}
+                        </small>
+                    </th>
+                    <th colspan="2">
+                        {{ total_commit }}
+                    </th>
+                </tr>
+            </tfoot>
+
+        </table>
+    </div>
+</div>
