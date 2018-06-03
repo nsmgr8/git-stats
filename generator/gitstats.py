@@ -11,6 +11,7 @@ from multiprocessing import Pool
 from . import utils
 
 logger = logging.getLogger(__name__)
+num_pools = 8
 
 
 class GitStats:
@@ -32,6 +33,7 @@ class GitStats:
         self.update_repos()
         self.repo_summary()
         self.repo_activity()
+        self.repo_lines()
 
         self.save_last_update()
 
@@ -40,7 +42,7 @@ class GitStats:
         repo_states = []
         repos = list(self.config.REPOSITORIES.items())
 
-        with Pool(8) as p:
+        with Pool(num_pools) as p:
             for result in p.imap_unordered(partial(update_repo,
                                                    self.repos_dir),
                                            repos):
@@ -64,18 +66,26 @@ class GitStats:
         self.save_data(list(repo_states.values()), 'repos.json')
 
     def repo_summary(self):
-        with Pool(8) as p:
+        with Pool(num_pools) as p:
             for result in p.imap_unordered(partial(summary, self.repos_dir),
                                            self.repos):
                 logger.info(result)
                 self.save_data(result['data'], 'summary.json', result['repo'])
 
     def repo_activity(self):
-        with Pool(8) as p:
+        with Pool(num_pools) as p:
             for result in p.imap_unordered(partial(activity, self.repos_dir),
                                            self.repos):
                 logger.info(result)
                 self.save_data(result['data'], 'activity.json', result['repo'])
+
+    def repo_lines(self):
+        with Pool(num_pools) as p:
+            for result in p.imap_unordered(partial(count_lines,
+                                                   self.repos_dir),
+                                           self.repos):
+                logger.info(result)
+                self.save_data(result['data'], 'lines.json', result['repo'])
 
     def _prepare_workdir(self):
         self.workdir = self.config.GLOBAL['workdir']
@@ -254,5 +264,16 @@ def activity(workdir, repo):
             'authors_age': {k: dict(v) for k, v in authors_age.items()},
         },
         'revisions': revisions,
+        'repo': repo,
+    }
+
+
+def count_lines(workdir, repo):
+    lines = json.loads(utils.run(f'cloc --vcs git --json',
+                       os.path.join(workdir, repo)).stdout.strip())
+    return {
+        'data': {
+            'lines': lines,
+        },
         'repo': repo,
     }

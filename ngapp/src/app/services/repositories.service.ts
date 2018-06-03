@@ -27,4 +27,8 @@ export class RepositoriesService {
     getRepoActivity(name) {
         return this.get(`${name}/activity.json`);
     }
+
+    getLines(name) {
+        return this.get(`${name}/lines.json`);
+    }
 }
