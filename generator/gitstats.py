@@ -35,6 +35,7 @@ class GitStats:
         self.repo_lines()
         revisions = self.repo_activity()
         self.repo_files_history(revisions)
+        self.repo_tags()
 
         self.save_last_update()
 
@@ -114,6 +115,43 @@ class GitStats:
                                            self.repos):
                 logger.info(result)
                 self.save_data(result['data'], 'lines.json', result['repo'])
+
+    def repo_tags(self):
+        repo_tags = {}
+        with Pool(num_pools) as p:
+            for result in p.imap_unordered(partial(get_tags,
+                                                   self.repos_dir),
+                                           self.repos):
+                repo_tags[result['repo']] = result['tags']
+
+        for repo, tags in repo_tags.items():
+            with Pool(num_pools) as p:
+                for result in p.imap_unordered(partial(get_timestamp,
+                                                       self.repos_dir, repo),
+                                               [t['revision'] for t in tags]):
+                    for t in tags:
+                        if t['revision'] == result['revision']:
+                            t['timestamp'] = result['timestamp']
+
+            tags = sorted(tags, key=lambda x: -x['timestamp'])
+            r = [t['revision'] for t in tags]
+
+            for i in range(len(tags)):
+                if i == len(tags) - 1:
+                    cmd = f'shortlog -s {r[i]}'
+                else:
+                    cmd = f'shortlog -s {r[i]} ^{r[i+1]}'
+                authors = []
+
+                for line in utils.run_git(
+                    self.repos_dir, repo, cmd
+                ).splitlines():
+                    commits, author = line.strip().split('\t', 1)
+                    authors.append({'author': author, 'commits': int(commits)})
+                    tags[i]['authors'] = authors
+
+            self.save_data(tags, 'tags.json', repo)
+            logger.info(tags)
 
     def _prepare_workdir(self):
         self.workdir = self.config.GLOBAL['workdir']
@@ -318,4 +356,34 @@ def num_files(workdir, repo, revision):
             'timestamp': revision['timestamp'],
             'files': files,
         },
+    }
+
+
+def get_tags(workdir, repo):
+    try:
+        tags = []
+
+        for line in utils.run_git(
+            workdir, repo,
+            f'show-ref --tags'
+        ).splitlines():
+            revision, tag = line.split()
+            tag = tag.replace('refs/tags/', '')
+            tags.append({'tag': tag, 'revision': revision})
+
+    except Exception:
+        tags = []
+
+    return {
+        'tags': tags,
+        'repo': repo,
+    }
+
+
+def get_timestamp(workdir, repo, revision):
+    timestamp = utils.run_git(workdir, repo,
+                              f'log --pretty=format:"%at" -n 1 {revision}')
+    return {
+        'timestamp': int(timestamp),
+        'revision': revision,
     }
