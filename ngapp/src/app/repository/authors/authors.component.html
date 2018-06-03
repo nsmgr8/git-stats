@@ -91,3 +91,37 @@
         </table>
     </div>
 </div>
+
+<div class="card mt-2"
+    *ngFor="let period_type of author_of_the_periods">
+    <div class="card-header bg-secondary text-white">
+        Author of the {{ period_type.type | slice:0:-2 | titlecase }}
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-sm table-bordered table-striped">
+
+            <thead>
+                <tr>
+                    <th>Period</th>
+                    <th>Name</th>
+                    <th class="text-right">Commits</th>
+                    <th class="text-right">Lines Added</th>
+                    <th class="text-right">Lines Removed</th>
+                    <th class="text-right"># Authors</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let row of period_type.value">
+                    <td>{{ row.period }}</td>
+                    <th>{{ row.data[0].author }}</th>
+                    <td class="text-right">{{ row.data[0].commits }}</td>
+                    <td class="text-right text-success">{{ row.data[0].insertions }}</td>
+                    <td class="text-right text-danger">{{ row.data[0].deletions }}</td>
+                    <td class="text-right">{{ row.data.length }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
