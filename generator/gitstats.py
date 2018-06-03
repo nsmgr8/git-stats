@@ -39,7 +39,7 @@ class GitStats:
         self.save_last_update()
 
     def update_repos(self):
-        prev_states = self.load_repositories_info()
+        prev_states = self.load_data('repos.json') or []
         repo_states = []
         repos = list(self.config.REPOSITORIES.items())
 
@@ -135,13 +135,6 @@ class GitStats:
                 return json.loads(fh.read())
         except Exception:
             return None
-
-    def load_repositories_info(self):
-        try:
-            with open(os.path.join(self.data_dir, 'repos.json')) as fh:
-                return json.loads(fh.read())
-        except Exception:
-            return []
 
     def save_last_update(self):
         last_updated = int(datetime.utcnow().timestamp())
