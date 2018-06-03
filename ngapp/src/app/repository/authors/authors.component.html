@@ -113,14 +113,45 @@
             </thead>
 
             <tbody>
-                <tr *ngFor="let row of period_type.value">
-                    <td>{{ row.period | period:period_type.type }}</td>
-                    <th>{{ row.data[0].author }}</th>
-                    <td class="text-right">{{ row.data[0].commits }}</td>
-                    <td class="text-right text-success">{{ row.data[0].insertions }}</td>
-                    <td class="text-right text-danger">{{ row.data[0].deletions }}</td>
-                    <td class="text-right">{{ row.data.length }}</td>
-                </tr>
+                <ng-template ngFor let-row [ngForOf]="period_type.value">
+                    <tr>
+                        <td>{{ row.period | period:period_type.type }}</td>
+                        <th>{{ row.data[0].author }}</th>
+                        <td class="text-right">{{ row.data[0].commits }}</td>
+                        <td class="text-right text-success">{{ row.data[0].insertions }}</td>
+                        <td class="text-right text-danger">{{ row.data[0].deletions }}</td>
+                        <td class="text-right show-others">
+                            <button class="btn btn-outline-info btn-sm"
+                                    (click)="row.show_others = !row.show_others">
+                                {{ row.data.length }}
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr *ngIf="row.show_others" class="table-info">
+                        <td colspan="6">
+                            <table class="small table table-sm table-bordered table-striped">
+                                <thead>
+                                    <tr class="table-warning">
+                                        <th>Name</th>
+                                        <th class="text-right">Commits</th>
+                                        <th class="text-right">Lines Added</th>
+                                        <th class="text-right">Lines Removed</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr *ngFor="let col of row.data.slice(1)">
+                                        <td>{{ col.author }}</td>
+                                        <td class="text-right">{{ col.commits }}</td>
+                                        <td class="text-right text-success">{{ col.insertions }}</td>
+                                        <td class="text-right text-danger">{{ col.deletions }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </ng-template>
             </tbody>
         </table>
     </div>
