@@ -15,6 +15,7 @@ import { CommitsComponent } from './repository/commits/commits.component';
 import { FilesComponent } from './repository/files/files.component';
 import { LinesComponent } from './repository/lines/lines.component';
 import { TagsComponent } from './repository/tags/tags.component';
+import { PeriodPipe } from './pipes/period.pipe';
 
 @NgModule({
     declarations: [
@@ -27,7 +28,8 @@ import { TagsComponent } from './repository/tags/tags.component';
         CommitsComponent,
         FilesComponent,
         LinesComponent,
-        TagsComponent
+        TagsComponent,
+        PeriodPipe
     ],
     imports: [
         BrowserModule,
