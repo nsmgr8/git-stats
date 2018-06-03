@@ -32,8 +32,9 @@ class GitStats:
 
         self.update_repos()
         self.repo_summary()
-        self.repo_activity()
         self.repo_lines()
+        revisions = self.repo_activity()
+        self.repo_files_history(revisions)
 
         self.save_last_update()
 
@@ -73,11 +74,26 @@ class GitStats:
                 self.save_data(result['data'], 'summary.json', result['repo'])
 
     def repo_activity(self):
+        revisions = {}
         with Pool(num_pools) as p:
             for result in p.imap_unordered(partial(activity, self.repos_dir),
                                            self.repos):
                 logger.info(result)
+                revisions[result['repo']] = result['revisions']
                 self.save_data(result['data'], 'activity.json', result['repo'])
+
+        return revisions
+
+    def repo_files_history(self, revisions):
+        for repo, revs in revisions.items():
+            data = {}
+            with Pool(num_pools) as p:
+                for result in p.imap_unordered(partial(num_files,
+                                                       self.repos_dir, repo),
+                                               revs):
+                    data.update(result)
+            logger.info(data)
+            self.save_data(data, 'files-history.json', repo)
 
     def repo_lines(self):
         with Pool(num_pools) as p:
@@ -217,11 +233,11 @@ def activity(workdir, repo):
             if m:
                 data['deletions'] = int(m.groups()[0])
         else:
-            timestamp, revision, author = line.split(' ', 2)
-            revisions.append(revision)
             data['commits'] = 1
-
+            timestamp, revision, author = line.split(' ', 2)
             timestamp = int(timestamp)
+            revisions.append({'timestamp': timestamp, 'revision': revision})
+
             date = datetime.fromtimestamp(timestamp)
             month = date.strftime('%Y-%m')
             day = date.strftime('%Y-%m-%d')
@@ -276,4 +292,17 @@ def count_lines(workdir, repo):
             'lines': lines,
         },
         'repo': repo,
+    }
+
+
+def num_files(workdir, repo, revision):
+    files = len(utils.run_git(
+        workdir, repo,
+        f'ls-tree -r --name-only {revision["revision"]}'
+    ).splitlines())
+    return {
+        revision['revision']: {
+            'timestamp': revision['timestamp'],
+            'files': files,
+        },
     }
