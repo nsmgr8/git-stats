@@ -1,3 +1,20 @@
-<p>
-  branches works!
-</p>
+<div class="card mt-2">
+    <div class="card-header bg-secondary text-white">
+        Branches last updated
+    </div>
+
+    <div class="card-body">
+        <dl>
+            <ng-template ngFor let-row [ngForOf]="branches">
+                <dt>{{ row.month }}</dt>
+                <dd>
+                    <span class="badge"
+                        *ngFor="let branch of row.branches; let odd=odd"
+                        [ngClass]="{'badge-light': odd}">
+                        {{ branch.revision }}
+                    </span>
+                </dd>
+            </ng-template>
+        </dl>
+    </div>
+</div>

@@ -39,4 +39,8 @@ export class RepositoriesService {
     getTags(name) {
         return this.get(`${name}/tags.json`);
     }
+
+    getBranches(name) {
+        return this.get(`${name}/branches.json`);
+    }
 }
