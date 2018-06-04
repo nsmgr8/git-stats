@@ -36,6 +36,7 @@ class GitStats:
         revisions = self.repo_activity()
         self.repo_files_history(revisions)
         self.repo_tags()
+        self.repo_branches()
 
         self.save_last_update()
 
@@ -152,6 +153,26 @@ class GitStats:
 
             self.save_data(tags, 'tags.json', repo)
             logger.info(tags)
+
+    def repo_branches(self):
+        repo_branches = {}
+        with Pool(num_pools) as p:
+            for result in p.imap_unordered(partial(get_branches,
+                                                   self.repos_dir),
+                                           self.repos):
+                repo_branches[result['repo']] = result['branches']
+
+        for repo, branches in repo_branches.items():
+            branch_timestamps = []
+            with Pool(num_pools) as p:
+                for result in p.imap_unordered(partial(get_timestamp,
+                                                       self.repos_dir, repo),
+                                               branches):
+                    branch_timestamps.append(result)
+
+            branches = sorted(branch_timestamps, key=lambda x: -x['timestamp'])
+            self.save_data(branches, 'branches.json', repo)
+            logger.info(branches)
 
     def _prepare_workdir(self):
         self.workdir = self.config.GLOBAL['workdir']
@@ -376,6 +397,21 @@ def get_tags(workdir, repo):
 
     return {
         'tags': tags,
+        'repo': repo,
+    }
+
+
+def get_branches(workdir, repo):
+    branches = []
+    for line in utils.run_git(workdir, repo, 'branch -r').splitlines():
+        line = line.strip()
+        if 'HEAD' in line:
+            continue
+
+        branches.append(line)
+
+    return {
+        'branches': branches,
         'repo': repo,
     }
 
