@@ -1,3 +1,46 @@
-<p>
-  tags works!
-</p>
+<div class="card mt-2">
+    <div class="card-header bg-secondary text-white">
+        Tags Statistics
+    </div>
+
+    <div class="table-responsive" *ngIf="tags?.length">
+
+        <table class="table table-sm table-bordered table-striped">
+
+            <thead>
+                <tr>
+                    <th>Tag <small class="text-muted">commits</small></th>
+                    <th>Created on</th>
+                    <th>Authors <small class="text-muted">commits</small></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let row of tags">
+                    <th>
+                        {{ row.tag }}
+                        <small class="text-muted">
+                            {{ row.commits }}
+                        </small>
+                    </th>
+                    <td>
+                        {{ row.timestamp | date }}
+                    </td>
+                    <td>
+                        <div *ngFor="let col of row.authors">
+                            {{ col.author }}
+                            <small class="text-muted">
+                                {{ col.commits }}
+                            </small>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <div class="card-body" *ngIf="tags?.length === 0">
+        No tags available
+    </div>
+</div>

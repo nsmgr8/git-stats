@@ -35,4 +35,8 @@ export class RepositoriesService {
     getFilesHistory(name) {
         return this.get(`${name}/files-history.json`);
     }
+
+    getTags(name) {
+        return this.get(`${name}/tags.json`);
+    }
 }
