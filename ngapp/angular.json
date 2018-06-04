@@ -30,7 +30,7 @@
               "src/styles.styl"
             ],
             "scripts": [
-              "node_modules/echarts/dist/echarts.min.js"
+              "node_modules/echarts/dist/echarts-en.min.js"
             ]
           },
           "configurations": {

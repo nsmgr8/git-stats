@@ -1,3 +1,12 @@
-<p>
-  age works!
-</p>
+<div class="card mt-2">
+    <div class="card-header bg-secondary text-white">
+        Activity ({{ active_days }} active days)
+    </div>
+
+    <div class="embed-responsive">
+        <div class="card-body">
+            <div echarts [options]="options" *ngFor="let options of charts">
+            </div>
+        </div>
+    </div>
+</div>

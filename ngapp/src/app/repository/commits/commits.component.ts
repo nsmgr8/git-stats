@@ -94,7 +94,7 @@ export class CommitsComponent implements OnInit {
     }
 }
 
-const makeColor = function(value, max) {
+export const makeColor = function(value, max) {
     if (!value) {
         return;
     }
