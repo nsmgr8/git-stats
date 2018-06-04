@@ -37,6 +37,7 @@ class GitStats:
         self.repo_files_history(revisions)
         self.repo_tags()
         self.repo_branches()
+        self.repo_blame()
 
         self.save_last_update()
 
@@ -173,6 +174,25 @@ class GitStats:
             branches = sorted(branch_timestamps, key=lambda x: -x['timestamp'])
             self.save_data(branches, 'branches.json', repo)
             logger.info(branches)
+
+    def repo_blame(self):
+        for repo in self.repos:
+            files = utils.run_git(
+                self.repos_dir, repo,
+                'ls-tree -r --name-only HEAD'
+            ).splitlines()
+
+            authors = {'lines': defaultdict(int), 'files': defaultdict(int)}
+            with Pool(num_pools) as p:
+                for result in p.imap_unordered(partial(get_blame,
+                                                       self.repos_dir, repo),
+                                               files):
+                    for author in result:
+                        authors['lines'][author] += result[author]
+                        authors['files'][author] += 1
+
+                logger.info(f'{repo}: {authors}')
+            self.save_data(authors, 'authors.json', repo)
 
     def _prepare_workdir(self):
         self.workdir = self.config.GLOBAL['workdir']
@@ -414,6 +434,22 @@ def get_branches(workdir, repo):
         'branches': branches,
         'repo': repo,
     }
+
+
+def get_blame(workdir, repo, fname):
+    authors = defaultdict(int)
+
+    try:
+        for line in utils.run_git(
+            workdir, repo, f'blame --line-porcelain -w {fname}'
+        ).splitlines():
+            if line.startswith('author '):
+                _, author = line.split(' ', 1)
+                authors[author] += 1
+    except Exception:
+        pass
+
+    return dict(authors)
 
 
 def get_timestamp(workdir, repo, revision):
