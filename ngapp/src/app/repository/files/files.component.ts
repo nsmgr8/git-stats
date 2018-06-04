@@ -14,6 +14,8 @@ export class FilesComponent implements OnInit, OnDestroy {
     subscription;
     chartOptions;
 
+    authors;
+
     constructor(
         public repoService: RepositoriesService,
         public route: ActivatedRoute
@@ -38,6 +40,21 @@ export class FilesComponent implements OnInit, OnDestroy {
             .subscribe(
                 data => this.setFiles(data)
             );
+        this.repoService.getAuthors(name)
+            .subscribe(
+                data => this.setAuthors(data)
+            );
+    }
+
+    setAuthors(data) {
+        const authors = Object.keys(data.lines);
+        this.authors = authors.map(a => {
+            return {
+                author: a,
+                lines: data.lines[a],
+                files: data.files[a]
+            };
+        }).sort((a, b) => b.lines - a.lines);
     }
 
     setFiles(data) {

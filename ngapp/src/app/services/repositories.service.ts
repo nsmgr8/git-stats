@@ -43,4 +43,8 @@ export class RepositoriesService {
     getBranches(name) {
         return this.get(`${name}/branches.json`);
     }
+
+    getAuthors(name) {
+        return this.get(`${name}/authors.json`);
+    }
 }
