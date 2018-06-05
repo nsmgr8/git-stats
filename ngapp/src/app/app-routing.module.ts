@@ -5,6 +5,7 @@ import { RepositoriesComponent } from './repositories/repositories.component';
 import { RepositoryComponent } from './repository/repository/repository.component';
 import { AgeComponent } from './repository/age/age.component';
 import { AuthorsComponent } from './repository/authors/authors.component';
+import { AuthorComponent } from './repository/author/author.component';
 import { BranchesComponent } from './repository/branches/branches.component';
 import { CommitsComponent } from './repository/commits/commits.component';
 import { FilesComponent } from './repository/files/files.component';
@@ -18,6 +19,7 @@ const routes: Routes = [
             { path: '', redirectTo: 'authors', pathMatch: 'full' },
             { path: 'age', component: AgeComponent },
             { path: 'authors', component: AuthorsComponent },
+            { path: 'author', component: AuthorComponent },
             { path: 'branches', component: BranchesComponent },
             { path: 'commits', component: CommitsComponent },
             { path: 'files', component: FilesComponent },

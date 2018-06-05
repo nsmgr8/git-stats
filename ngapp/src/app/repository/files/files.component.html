@@ -23,7 +23,11 @@
 
             <tbody>
                 <tr *ngFor="let row of authors">
-                    <th>{{ row.author }}</th>
+                    <th>
+                        <a [routerLink]="['/repo', repo, 'author', {author: row.author}]">
+                            {{ row.author }}
+                        </a>
+                    </th>
                     <td class="text-right">{{ row.lines }}</td>
                     <td class="text-right">{{ row.files }}</td>
                 </tr>

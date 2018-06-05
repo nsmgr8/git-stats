@@ -17,6 +17,7 @@ import { FilesComponent } from './repository/files/files.component';
 import { LinesComponent } from './repository/lines/lines.component';
 import { TagsComponent } from './repository/tags/tags.component';
 import { PeriodPipe } from './pipes/period.pipe';
+import { AuthorComponent } from './repository/author/author.component';
 
 @NgModule({
     declarations: [
@@ -30,7 +31,8 @@ import { PeriodPipe } from './pipes/period.pipe';
         FilesComponent,
         LinesComponent,
         TagsComponent,
-        PeriodPipe
+        PeriodPipe,
+        AuthorComponent
     ],
     imports: [
         BrowserModule,

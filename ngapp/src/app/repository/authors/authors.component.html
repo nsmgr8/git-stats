@@ -79,7 +79,11 @@
 
             <tbody>
                 <tr *ngFor="let author of authors">
-                    <th>{{ author.author }}</th>
+                    <th>
+                        <a [routerLink]="['/repo', repo, 'author', {author: author.author}]">
+                            {{ author.author }}
+                        </a>
+                    </th>
                     <td class="text-right">{{ author.commits | number }}</td>
                     <td class="text-right text-success">{{ author.insertions | number }}</td>
                     <td class="text-right text-danger">{{ author.deletions | number }}</td>
@@ -116,7 +120,11 @@
                 <ng-template ngFor let-row [ngForOf]="period_type.value">
                     <tr>
                         <td>{{ row.period | period:period_type.type }}</td>
-                        <th>{{ row.data[0].author }}</th>
+                        <th>
+                            <a [routerLink]="['/repo', repo, 'author', {author: row.data[0].author}]">
+                                {{ row.data[0].author }}
+                            </a>
+                        </th>
                         <td class="text-right">{{ row.data[0].commits }}</td>
                         <td class="text-right text-success">{{ row.data[0].insertions }}</td>
                         <td class="text-right text-danger">{{ row.data[0].deletions }}</td>
@@ -142,7 +150,11 @@
 
                                 <tbody>
                                     <tr *ngFor="let col of row.data.slice(1)">
-                                        <td>{{ col.author }}</td>
+                                        <td>
+                                            <a [routerLink]="['/repo', repo, 'author', {author: col.author}]">
+                                                {{ col.author }}
+                                            </a>
+                                        </td>
                                         <td class="text-right">{{ col.commits }}</td>
                                         <td class="text-right text-success">{{ col.insertions }}</td>
                                         <td class="text-right text-danger">{{ col.deletions }}</td>
