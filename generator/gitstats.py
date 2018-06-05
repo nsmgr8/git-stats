@@ -377,8 +377,12 @@ def activity(workdir, repo):
 
 
 def count_lines(workdir, repo):
-    lines = json.loads(utils.run(f'cloc --vcs git --json',
-                       os.path.join(workdir, repo)).stdout.strip())
+    try:
+        lines = json.loads(utils.run(f'cloc --vcs git --json',
+                           os.path.join(workdir, repo)).stdout.strip())
+    except Exception:
+        lines = []
+
     return {
         'data': {
             'lines': lines,
