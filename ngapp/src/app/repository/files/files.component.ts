@@ -11,10 +11,11 @@ import { RepositoriesService } from '../../services/repositories.service';
 })
 export class FilesComponent implements OnInit, OnDestroy {
     repo;
-    subscription;
+    subscriptions = new Set<any>();
     chartOptions;
 
     authors;
+    summary;
 
     constructor(
         public repoService: RepositoriesService,
@@ -29,21 +30,29 @@ export class FilesComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        if (this.subscription) {
-            this.subscription.unsubscribe();
-        }
+        this.subscriptions.forEach(x => x.unsubscribe());
     }
 
     getRepo({name}: any) {
         this.repo = name;
-        this.subscription = this.repoService.getFilesHistory(name)
-            .subscribe(
-                data => this.setFiles(data)
-            );
-        this.repoService.getAuthors(name)
-            .subscribe(
-                data => this.setAuthors(data)
-            );
+        this.subscriptions.add(
+            this.repoService.getFilesHistory(name)
+                .subscribe(data => this.setFiles(data))
+        );
+        this.subscriptions.add(
+            this.repoService.getAuthors(name)
+                .subscribe(data => this.setAuthors(data))
+        );
+        this.subscriptions.add(
+            this.repoService.getRepoSummary(name)
+                .subscribe(data => this.setLines(data))
+        );
+    }
+
+    setLines(data) {
+        const summary = {};
+        data.forEach(x => summary[x.key] = x.value);
+        this.summary = summary;
     }
 
     setAuthors(data) {

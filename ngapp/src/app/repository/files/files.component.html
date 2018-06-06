@@ -13,10 +13,12 @@
             <thead>
                 <tr class="table-warning">
                     <th>Author</th>
-                    <th class="text-right">
+                    <th colspan="2" class="text-right">
                         Current Lines
                     </th>
-                    <th class="text-right">in Files</th>
+                    <th colspan="2" class="text-right">
+                        in Files
+                    </th>
                 </tr>
             </thead>
 
@@ -27,8 +29,18 @@
                             {{ row.author }}
                         </a>
                     </th>
-                    <td class="text-right">{{ row.lines }}</td>
-                    <td class="text-right">{{ row.files }}</td>
+                    <td class="text-right">
+                        {{ row.lines }}
+                    </td>
+                    <td class="text-right small text-muted">
+                        {{ row.lines / summary.lines | percent:'0.2' }}
+                    </td>
+                    <td class="text-right">
+                        {{ row.files }}
+                    </td>
+                    <td class="text-right small text-muted">
+                        {{ row.files / summary.files | percent:'0.2' }}
+                    </td>
                 </tr>
             </tbody>
         </table>
