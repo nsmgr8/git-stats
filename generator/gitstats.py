@@ -178,6 +178,9 @@ class GitStats:
     def repo_blame(self):
         for repo in self.repos:
             cache = self.load_data('files-authors.json', repo) or {}
+            detect_move = self.config.config.getboolean('GLOBAL',
+                                                        'detect_move',
+                                                        fallback=False)
 
             files_to_blame = {}
             authors = {}
@@ -192,9 +195,10 @@ class GitStats:
                     files_to_blame[fname] = revision
 
             with Pool(num_pools) as p:
-                for result in p.imap_unordered(partial(get_blame,
-                                                       self.repos_dir, repo),
-                                               files_to_blame):
+                for result in p.imap_unordered(
+                    partial(get_blame, self.repos_dir, repo, detect_move),
+                    files_to_blame
+                ):
                     authors[result['file']] = {
                         'authors': result['authors'],
                         'revision': files_to_blame[result['file']],
@@ -460,12 +464,13 @@ def get_branches(workdir, repo):
     }
 
 
-def get_blame(workdir, repo, fname):
+def get_blame(workdir, repo, detect_move, fname):
     authors = defaultdict(int)
+    opts = '-C -C -C -M' if detect_move else ''
 
     try:
         for line in utils.run_git(
-            workdir, repo, f'blame --line-porcelain -w {fname}'
+            workdir, repo, f'blame --line-porcelain {opts} -w {fname}'
         ).splitlines():
             if line.startswith('author '):
                 _, author = line.split(' ', 1)
