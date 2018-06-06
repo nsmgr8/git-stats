@@ -177,22 +177,42 @@ class GitStats:
 
     def repo_blame(self):
         for repo in self.repos:
-            files = utils.run_git(
-                self.repos_dir, repo,
-                'ls-tree -r --name-only HEAD'
-            ).splitlines()
+            cache = self.load_data('files-authors.json', repo) or {}
 
-            authors = {'lines': defaultdict(int), 'files': defaultdict(int)}
+            files_to_blame = {}
+            authors = {}
+            for line in utils.run_git(
+                self.repos_dir, repo,
+                'ls-tree -r HEAD'
+            ).splitlines():
+                *_, revision, fname = line.split()
+                if cache.get(fname, {}).get('revision') == revision:
+                    authors[fname] = cache[fname]
+                else:
+                    files_to_blame[fname] = revision
+
             with Pool(num_pools) as p:
                 for result in p.imap_unordered(partial(get_blame,
                                                        self.repos_dir, repo),
-                                               files):
-                    for author in result:
-                        authors['lines'][author] += result[author]
-                        authors['files'][author] += 1
+                                               files_to_blame):
+                    authors[result['file']] = {
+                        'authors': result['authors'],
+                        'revision': files_to_blame[result['file']],
+                    }
 
-                logger.info(f'{repo}: {authors}')
-            self.save_data(authors, 'authors.json', repo)
+            self.save_data(authors, 'files-authors.json', repo)
+
+            authors_counts = {
+                'lines': defaultdict(int),
+                'files': defaultdict(int),
+            }
+            for values in authors.values():
+                for author, lines in values['authors'].items():
+                    authors_counts['lines'][author] += lines
+                    authors_counts['files'][author] += 1
+
+            logger.info(f'{repo}: {authors_counts}')
+            self.save_data(authors_counts, 'authors.json', repo)
 
     def _prepare_workdir(self):
         self.workdir = self.config.GLOBAL['workdir']
@@ -453,7 +473,7 @@ def get_blame(workdir, repo, fname):
     except Exception:
         pass
 
-    return dict(authors)
+    return {'file': fname, 'authors': dict(authors)}
 
 
 def get_timestamp(workdir, repo, revision):
