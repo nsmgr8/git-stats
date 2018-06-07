@@ -13,7 +13,14 @@ export class AgeComponent implements OnInit {
     subscription;
     active_days = 0;
 
+    years;
+    max_values = {
+        commits: 0,
+        insertions: 0,
+        deletions: 0
+    };
     charts = [];
+    chart_type = 'commits';
 
     constructor(
         public repoService: RepositoriesService,
@@ -38,7 +45,11 @@ export class AgeComponent implements OnInit {
     setRepoActivity(data) {
         const years = {};
         const daily = Object.keys(data.by_time.daily.commits);
-        let max_commits = 0;
+        const max_values = {
+            commits: 0,
+            insertions: 0,
+            deletions: 0
+        };
 
         daily.forEach(day => {
             const [y] = day.split('-');
@@ -48,8 +59,16 @@ export class AgeComponent implements OnInit {
             const insertions = data.by_time.daily.insertions[day];
             const deletions = data.by_time.daily.deletions[day];
 
-            if (commits > max_commits) {
-                max_commits = commits;
+            if (commits > max_values.commits) {
+                max_values.commits = commits;
+            }
+
+            if (insertions && insertions > max_values.insertions) {
+                max_values.insertions = insertions;
+            }
+
+            if (deletions && deletions > max_values.deletions) {
+                max_values.deletions = deletions;
             }
 
             const row = {
@@ -66,13 +85,19 @@ export class AgeComponent implements OnInit {
             }
         });
 
-        this.setHeatmap(years, max_commits);
+        this.years = years;
+        this.max_values = max_values;
+        this.setHeatmap(this.chart_type);
     }
 
-    setHeatmap(years, max_commits) {
+    setHeatmap(chart_type) {
+        this.chart_type = chart_type;
+        const years = this.years;
+        const max_value = this.max_values[chart_type];
+
         this.charts = Object.keys(years).sort((a, b) => {
             return +b - +a;
-        }).map((year, yi) => ({
+        }).map(year => ({
             tooltip: {
                 position: 'top',
                 formatter: value => {
@@ -116,11 +141,7 @@ export class AgeComponent implements OnInit {
 
             visualMap: {
                 min: 0,
-                max: max_commits,
-                show: yi === 0,
-                orient: 'horizontal',
-                left: 'center',
-                top: 'top'
+                max: max_value
             },
 
             calendar: [{
@@ -132,7 +153,7 @@ export class AgeComponent implements OnInit {
                 type: 'heatmap',
                 coordinateSystem: 'calendar',
                 calendarIndex: 0,
-                data: years[year].map(x => [x.day, x.commits])
+                data: years[year].map(x => [x.day, x[chart_type]])
             }]
         }));
     }
