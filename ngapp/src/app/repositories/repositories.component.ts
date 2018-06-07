@@ -27,7 +27,8 @@ export class RepositoriesComponent implements OnInit {
         this.repos = data.map(x => {
             return {
                 ...x,
-                timestamp: x.date * 1000
+                timestamp: x.date * 1000,
+                first: x.start_date * 1000
             };
         }).sort((a, b) => {
             return +b.date - +a.date;

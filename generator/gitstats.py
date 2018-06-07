@@ -261,10 +261,15 @@ def update_repo(workdir, repo):
             workdir, repo[0],
             f'log --pretty=format:"%H %at %aN" -n1'
         ).split(' ', 2)
+        first_commit = int(utils.run_git(
+            workdir, repo[0],
+            'log --reverse --pretty=format:"%at"'
+        ).splitlines()[0])
         return {
             'name': repo[0],
             'HEAD': head,
             'date': int(timestamp),
+            'start_date': int(first_commit),
             'author': author,
         }
     except Exception as e:
