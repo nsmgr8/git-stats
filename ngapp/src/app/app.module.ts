@@ -19,6 +19,8 @@ import { TagsComponent } from './repository/tags/tags.component';
 import { PeriodPipe } from './pipes/period.pipe';
 import { AuthorComponent } from './repository/author/author.component';
 
+import { ComponentsModule } from './components/components.module';
+
 @NgModule({
     declarations: [
         AppComponent,
@@ -39,7 +41,8 @@ import { AuthorComponent } from './repository/author/author.component';
         HttpClientModule,
         NgbModule.forRoot(),
         NgxEchartsModule,
-        AppRoutingModule
+        AppRoutingModule,
+        ComponentsModule
     ],
     providers: [],
     bootstrap: [AppComponent]

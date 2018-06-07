@@ -9,70 +9,40 @@
                 <tr>
                     <th>Name</th>
                     <th class="text-right" (click)="toggleOrder('commits')">
-                        <span *ngIf="order.field === 'commits'">
-                            <span *ngIf="order.direction === -1">
-                                &#x25B2;
-                            </span>
-                            <span *ngIf="order.direction === 1">
-                                &#x25BC;
-                            </span>
-                        </span>
-                        Commits
+                        <app-order-toggle [show]="order.field === 'commits'"
+                            [direction]="order.direction">
+                            Commits
+                        </app-order-toggle>
                     </th>
                     <th class="text-right" (click)="toggleOrder('insertions')">
-                        <span *ngIf="order.field === 'insertions'">
-                            <span *ngIf="order.direction === -1">
-                                &#x25B2;
-                            </span>
-                            <span *ngIf="order.direction === 1">
-                                &#x25BC;
-                            </span>
-                        </span>
-                        Lines Added
+                        <app-order-toggle [show]="order.field === 'insertions'"
+                            [direction]="order.direction">
+                            Lines Added
+                        </app-order-toggle>
                     </th>
                     <th class="text-right" (click)="toggleOrder('deletions')">
-                        <span *ngIf="order.field === 'deletions'">
-                            <span *ngIf="order.direction === -1">
-                                &#x25B2;
-                            </span>
-                            <span *ngIf="order.direction === 1">
-                                &#x25BC;
-                            </span>
-                        </span>
-                        Lines Removed
+                        <app-order-toggle [show]="order.field === 'deletions'"
+                            [direction]="order.direction">
+                            Lines Removed
+                        </app-order-toggle>
                     </th>
                     <th class="text-right" (click)="toggleOrder('first_commit')">
-                        <span *ngIf="order.field === 'first_commit'">
-                            <span *ngIf="order.direction === -1">
-                                &#x25B2;
-                            </span>
-                            <span *ngIf="order.direction === 1">
-                                &#x25BC;
-                            </span>
-                        </span>
-                        First Commit
+                        <app-order-toggle [show]="order.field === 'first_commit'"
+                            [direction]="order.direction">
+                            First Commit
+                        </app-order-toggle>
                     </th>
                     <th class="text-right" (click)="toggleOrder('last_commit')">
-                        <span *ngIf="order.field === 'last_commit'">
-                            <span *ngIf="order.direction === -1">
-                                &#x25B2;
-                            </span>
-                            <span *ngIf="order.direction === 1">
-                                &#x25BC;
-                            </span>
-                        </span>
-                        Last Commit
+                        <app-order-toggle [show]="order.field === 'last_commit'"
+                            [direction]="order.direction">
+                            Last Commit
+                        </app-order-toggle>
                     </th>
                     <th class="text-right" (click)="toggleOrder('days')">
-                        <span *ngIf="order.field === 'days'">
-                            <span *ngIf="order.direction === -1">
-                                &#x25B2;
-                            </span>
-                            <span *ngIf="order.direction === 1">
-                                &#x25BC;
-                            </span>
-                        </span>
-                        Age (Days)
+                        <app-order-toggle [show]="order.field === 'days'"
+                            [direction]="order.direction">
+                            Age (Days)
+                        </app-order-toggle>
                     </th>
                 </tr>
             </thead>
@@ -111,37 +81,22 @@
                     <th>Period</th>
                     <th>Name</th>
                     <th class="text-right" (click)="togglePeriodOrder('commits')">
-                        <span *ngIf="period_order.field === 'commits'">
-                            <span *ngIf="period_order.direction === -1">
-                                &#x25B2;
-                            </span>
-                            <span *ngIf="period_order.direction === 1">
-                                &#x25BC;
-                            </span>
-                        </span>
-                        Commits
+                        <app-order-toggle [show]="period_order.field === 'commits'"
+                            [direction]="period_order.direction">
+                            Commits
+                        </app-order-toggle>
                     </th>
                     <th class="text-right" (click)="togglePeriodOrder('insertions')">
-                        <span *ngIf="period_order.field === 'insertions'">
-                            <span *ngIf="period_order.direction === -1">
-                                &#x25B2;
-                            </span>
-                            <span *ngIf="period_order.direction === 1">
-                                &#x25BC;
-                            </span>
-                        </span>
-                        Lines Added
+                        <app-order-toggle [show]="period_order.field === 'insertions'"
+                            [direction]="period_order.direction">
+                            Lines Added
+                        </app-order-toggle>
                     </th>
                     <th class="text-right" (click)="togglePeriodOrder('deletions')">
-                        <span *ngIf="period_order.field === 'deletions'">
-                            <span *ngIf="period_order.direction === -1">
-                                &#x25B2;
-                            </span>
-                            <span *ngIf="period_order.direction === 1">
-                                &#x25BC;
-                            </span>
-                        </span>
-                        Lines Removed
+                        <app-order-toggle [show]="period_order.field === 'deletions'"
+                            [direction]="period_order.direction">
+                            Lines Removed
+                        </app-order-toggle>
                     </th>
                     <th class="text-right"># Authors</th>
                 </tr>
