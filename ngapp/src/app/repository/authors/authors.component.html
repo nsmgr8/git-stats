@@ -100,18 +100,49 @@
     *ngFor="let period_type of author_of_the_periods">
     <div class="card-header bg-secondary text-white">
         Author of the {{ period_type.type | slice:0:-2 | titlecase }}
+        by {{ order_title[period_order.field] }}
     </div>
 
     <div class="table-responsive">
-        <table class="table table-sm table-bordered table-striped mb-0">
+        <table class="authors table table-sm table-bordered table-striped mb-0">
 
             <thead>
                 <tr>
                     <th>Period</th>
                     <th>Name</th>
-                    <th class="text-right">Commits</th>
-                    <th class="text-right">Lines Added</th>
-                    <th class="text-right">Lines Removed</th>
+                    <th class="text-right" (click)="togglePeriodOrder('commits')">
+                        <span *ngIf="period_order.field === 'commits'">
+                            <span *ngIf="period_order.direction === -1">
+                                &#x25B2;
+                            </span>
+                            <span *ngIf="period_order.direction === 1">
+                                &#x25BC;
+                            </span>
+                        </span>
+                        Commits
+                    </th>
+                    <th class="text-right" (click)="togglePeriodOrder('insertions')">
+                        <span *ngIf="period_order.field === 'insertions'">
+                            <span *ngIf="period_order.direction === -1">
+                                &#x25B2;
+                            </span>
+                            <span *ngIf="period_order.direction === 1">
+                                &#x25BC;
+                            </span>
+                        </span>
+                        Lines Added
+                    </th>
+                    <th class="text-right" (click)="togglePeriodOrder('deletions')">
+                        <span *ngIf="period_order.field === 'deletions'">
+                            <span *ngIf="period_order.direction === -1">
+                                &#x25B2;
+                            </span>
+                            <span *ngIf="period_order.direction === 1">
+                                &#x25BC;
+                            </span>
+                        </span>
+                        Lines Removed
+                    </th>
                     <th class="text-right"># Authors</th>
                 </tr>
             </thead>

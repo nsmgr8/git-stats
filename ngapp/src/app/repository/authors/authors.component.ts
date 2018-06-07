@@ -16,6 +16,16 @@ export class AuthorsComponent implements OnInit {
         field: 'commits',
         direction: 1
     };
+    period_order = {
+        field: 'commits',
+        direction: 1
+    };
+
+    order_title = {
+        commits: 'Commits',
+        insertions: 'Lines Added',
+        deletions: 'Lines Removed'
+    };
 
     author_of_the_periods;
 
@@ -80,6 +90,28 @@ export class AuthorsComponent implements OnInit {
         }
         this.authors = this.authors.sort((a, b) => {
             return this.order.direction * (b[field] - a[field]);
+        });
+    }
+
+    togglePeriodOrder(field) {
+        if (this.period_order.field === field) {
+            this.period_order.direction = -1 * this.period_order.direction;
+        } else {
+            this.period_order = {field, direction: 1};
+        }
+
+        this.author_of_the_periods = this.author_of_the_periods.map(x => {
+            return {
+                ...x,
+                value: x.value.map(y => {
+                    return {
+                        ...y,
+                        data: y.data.sort((a, b) => {
+                            return this.period_order.direction * (b[field] - a[field]);
+                        })
+                    };
+                })
+            };
         });
     }
 
