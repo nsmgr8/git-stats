@@ -52,12 +52,12 @@ export class RepositoriesService {
     }
 
     videoUrl(name) {
-        return `${this.endpoint}${name}/history.webm`;
+        return `${this.endpoint}${name}/history.mp4`;
     }
 
     getVideo(name) {
         return this.http.head(
-            `${this.endpoint}${name}/history.webm`,
+            this.videoUrl(name),
             {observe: 'response', responseType: 'blob'}
         );
     }
