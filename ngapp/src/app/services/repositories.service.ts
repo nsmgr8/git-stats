@@ -53,7 +53,7 @@ export class RepositoriesService {
     }
 
     getVideo(name) {
-        return this.http.get(
+        return this.http.head(
             `${this.endpoint}${name}/history.webm`,
             {observe: 'response', responseType: 'blob'}
         );
