@@ -96,7 +96,7 @@ class GitStats:
             if cache:
                 data = cache
                 revs_to_check = [rev for rev in revs
-                                 if rev not in revs]
+                                 if rev['revision'] not in cache]
             else:
                 data = {}
                 revs_to_check = revs
