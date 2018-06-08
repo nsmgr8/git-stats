@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Location } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
@@ -8,8 +9,10 @@ export class RepositoriesService {
     endpoint = '/data/';
 
     constructor(
+        loc: Location,
         public http: HttpClient
     ) {
+        this.endpoint = loc.prepareExternalUrl('/data/');
     }
 
     get(path) {
