@@ -16,7 +16,7 @@ const routes: Routes = [
     { path: '', component: RepositoriesComponent },
     { path: 'repo/:name', component: RepositoryComponent,
         children: [
-            { path: '', redirectTo: 'authors', pathMatch: 'full' },
+            { path: '', redirectTo: 'commits', pathMatch: 'full' },
             { path: 'age', component: AgeComponent },
             { path: 'authors', component: AuthorsComponent },
             { path: 'author', component: AuthorComponent },
