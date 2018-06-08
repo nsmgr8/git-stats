@@ -51,6 +51,7 @@ class GitStats:
                                                    self.repos_dir),
                                            repos):
                 if result:
+                    logger.info(f'{result["name"]} updated')
                     repo_states.append(result)
 
         prev = {r['name']: r for r in prev_states}
@@ -66,24 +67,23 @@ class GitStats:
         if self.config.force:
             self.repos = list(repo_states)
 
-        logger.info(repo_states)
         self.save_data(list(repo_states.values()), 'repos.json')
 
     def repo_summary(self):
         with Pool(num_pools) as p:
             for result in p.imap_unordered(partial(summary, self.repos_dir),
                                            self.repos):
-                logger.info(result)
                 self.save_data(result['data'], 'summary.json', result['repo'])
+                logger.info(f'{result["repo"]} summary updated')
 
     def repo_activity(self):
         revisions = {}
         with Pool(num_pools) as p:
             for result in p.imap_unordered(partial(activity, self.repos_dir),
                                            self.repos):
-                logger.info(result)
                 revisions[result['repo']] = result['revisions']
                 self.save_data(result['data'], 'activity.json', result['repo'])
+                logger.info(f'{result["repo"]} activity updated')
 
         return revisions
 
@@ -107,16 +107,16 @@ class GitStats:
                                                revs_to_check):
                     data.update(result)
 
-            logger.info(data)
             self.save_data(data, fname, repo)
+            logger.info(f'{repo} files history updated')
 
     def repo_lines(self):
         with Pool(num_pools) as p:
             for result in p.imap_unordered(partial(count_lines,
                                                    self.repos_dir),
                                            self.repos):
-                logger.info(result)
                 self.save_data(result['data'], 'lines.json', result['repo'])
+                logger.info(f'{result["repo"]} lines updated')
 
     def repo_tags(self):
         repo_tags = {}
@@ -153,7 +153,7 @@ class GitStats:
                     tags[i]['authors'] = authors
 
             self.save_data(tags, 'tags.json', repo)
-            logger.info(tags)
+            logger.info(f'{repo} tags updated')
 
     def repo_branches(self):
         repo_branches = {}
@@ -173,7 +173,7 @@ class GitStats:
 
             branches = sorted(branch_timestamps, key=lambda x: -x['timestamp'])
             self.save_data(branches, 'branches.json', repo)
-            logger.info(branches)
+            logger.info(f'{repo} branches updated')
 
     def repo_blame(self):
         for repo in self.repos:
@@ -215,8 +215,8 @@ class GitStats:
                     authors_counts['lines'][author] += lines
                     authors_counts['files'][author] += 1
 
-            logger.info(f'{repo}: {authors_counts}')
             self.save_data(authors_counts, 'authors.json', repo)
+            logger.info(f'{repo} authors lines updated')
 
     def _prepare_workdir(self):
         self.workdir = self.config.GLOBAL['workdir']
