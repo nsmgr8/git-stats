@@ -10,6 +10,8 @@ import { RepositoriesService } from '../../services/repositories.service';
 })
 export class CommitsComponent implements OnInit {
     subscription;
+    videoSubscription;
+
     repo;
     activity;
     hour_of_week;
@@ -17,6 +19,7 @@ export class CommitsComponent implements OnInit {
     total_commit;
 
     commitsByPeriod;
+    videoUrl = '';
 
     constructor(
         public repoService: RepositoriesService,
@@ -36,6 +39,17 @@ export class CommitsComponent implements OnInit {
             .subscribe(
                 data => this.setRepoActivity(data)
             );
+        this.videoSubscription = this.repoService.getVideo(name)
+            .subscribe(
+                response => this.videoResponse(response)
+            );
+    }
+
+    videoResponse(response) {
+        if (response.status === 200) {
+            this.videoSubscription.unsubscribe();
+            this.videoUrl = this.repoService.videoUrl(this.repo);
+        }
     }
 
     setRepoActivity(data) {

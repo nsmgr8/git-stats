@@ -47,4 +47,15 @@ export class RepositoriesService {
     getAuthors(name) {
         return this.get(`${name}/authors.json`);
     }
+
+    videoUrl(name) {
+        return `${this.endpoint}${name}/history.webm`;
+    }
+
+    getVideo(name) {
+        return this.http.get(
+            `${this.endpoint}${name}/history.webm`,
+            {observe: 'response', responseType: 'blob'}
+        );
+    }
 }
