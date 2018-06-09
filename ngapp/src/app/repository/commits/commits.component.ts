@@ -47,7 +47,6 @@ export class CommitsComponent implements OnInit {
 
     videoResponse(response) {
         if (response.status === 200) {
-            this.videoSubscription.unsubscribe();
             this.videoUrl = this.repoService.videoUrl(this.repo);
         }
     }

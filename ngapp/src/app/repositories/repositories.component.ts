@@ -10,6 +10,7 @@ import { RepositoriesService } from '../services/repositories.service';
 export class RepositoriesComponent implements OnInit {
     subscription;
     repos;
+    has_video: any = {};
 
     constructor(
         public repoService: RepositoriesService
@@ -33,5 +34,18 @@ export class RepositoriesComponent implements OnInit {
         }).sort((a, b) => {
             return +b.date - +a.date;
         });
+
+        this.repos.forEach(repo => {
+            this.repoService.getVideo(repo.name)
+                .subscribe(
+                    response => this.setVideoResponse(repo.name, response)
+                );
+        });
+    }
+
+    setVideoResponse(repo, response) {
+        if (response.status === 200) {
+            this.has_video = {...this.has_video, [repo]: true};
+        }
     }
 }

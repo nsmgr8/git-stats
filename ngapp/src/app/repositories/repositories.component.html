@@ -14,6 +14,9 @@
             <tbody>
                 <tr *ngFor="let repo of repos">
                     <th>
+                        <span *ngIf="has_video[repo.name]">
+                            &#9654;
+                        </span>
                         <a [routerLink]="['/repo', repo.name]">
                             {{ repo.name }}
                         </a>
