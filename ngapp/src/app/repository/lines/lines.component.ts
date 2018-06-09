@@ -12,6 +12,7 @@ export class LinesComponent implements OnInit {
     repo;
     lines;
     lines_total;
+    order = 'code';
 
     constructor(
         public repoService: RepositoriesService,
@@ -49,5 +50,10 @@ export class LinesComponent implements OnInit {
             ...data.lines.SUM,
             total: data.lines.SUM.blank + data.lines.SUM.comment + data.lines.SUM.code
         };
+    }
+
+    toggleOrder(field) {
+        this.order = field;
+        this.lines = this.lines.sort((a, b) => b[field] - a[field]);
     }
 }

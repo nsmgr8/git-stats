@@ -9,11 +9,33 @@
             <thead>
                 <tr>
                     <th>Language</th>
-                    <th class="text-right">Files</th>
-                    <th class="text-right">Blank</th>
-                    <th class="text-right">Comments</th>
-                    <th class="text-right">Code</th>
-                    <th class="text-right table-active">Total</th>
+                    <th class="text-right" (click)="toggleOrder('nFiles')">
+                        <span *ngIf="order === 'nFiles'">
+                            &#x25BC;
+                        </span>
+                        Files
+                    </th>
+                    <th class="text-right" (click)="toggleOrder('blank')">
+                        <span *ngIf="order === 'blank'">
+                            &#x25BC;
+                        </span>
+                        Blank
+                    </th>
+                    <th class="text-right" (click)="toggleOrder('comment')">
+                        <span *ngIf="order === 'comment'">
+                            &#x25BC;
+                        </span>
+                        Comments
+                    </th>
+                    <th class="text-right" (click)="toggleOrder('code')">
+                        <span *ngIf="order === 'code'">
+                            &#x25BC;
+                        </span>
+                        Code
+                    </th>
+                    <th class="text-right table-active">
+                        Total
+                    </th>
                 </tr>
             </thead>
 
