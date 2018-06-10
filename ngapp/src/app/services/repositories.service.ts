@@ -55,7 +55,7 @@ export class RepositoriesService {
         return `${this.endpoint}${name}/history.mp4`;
     }
 
-    getVideo(name) {
+    hasVideo(name) {
         return this.http.head(
             this.videoUrl(name),
             {observe: 'response', responseType: 'blob'}

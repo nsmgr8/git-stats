@@ -36,9 +36,10 @@ export class RepositoriesComponent implements OnInit {
         });
 
         this.repos.forEach(repo => {
-            this.repoService.getVideo(repo.name)
+            this.repoService.hasVideo(repo.name)
                 .subscribe(
-                    response => this.setVideoResponse(repo.name, response)
+                    response => this.setVideoResponse(repo.name, response),
+                    () => {}
                 );
         });
     }

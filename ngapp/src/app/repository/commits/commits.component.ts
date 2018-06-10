@@ -39,7 +39,7 @@ export class CommitsComponent implements OnInit {
             .subscribe(
                 data => this.setRepoActivity(data)
             );
-        this.videoSubscription = this.repoService.getVideo(name)
+        this.videoSubscription = this.repoService.hasVideo(name)
             .subscribe(
                 response => this.videoResponse(response)
             );
