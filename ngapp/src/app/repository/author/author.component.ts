@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { RepositoriesService } from '../../services/repositories.service';
-import { commitCalender } from '../age/age.component';
+import { prepareDailyActivity, commitCalender } from '../age/age.component';
 
 @Component({
     selector: 'app-author',
@@ -43,38 +43,10 @@ export class AuthorComponent implements OnInit {
 
     setRepoActivity(data) {
         this.author_data = data.by_authors[this.author];
-        const author_daily = data.by_authors[this.author].daily;
-        const years = {};
-        const daily = Object.keys(author_daily.commits);
-        let max_commits = 0;
-
-        daily.forEach(day => {
-            const [y] = day.split('-');
-            this.active_days += 1;
-
-            const commits = author_daily.commits[day];
-            const insertions = author_daily.insertions[day];
-            const deletions = author_daily.deletions[day];
-
-            if (commits > max_commits) {
-                max_commits = commits;
-            }
-
-            const row = {
-                day,
-                commits,
-                insertions,
-                deletions
-            };
-
-            if (years[y]) {
-                years[y].push(row);
-            } else {
-                years[y] = [row];
-            }
-        });
-
-        this.setHeatmap(years, max_commits);
+        const daily = data.by_authors[this.author].daily;
+        const commit_days = Object.keys(daily.commits);
+        const {years, max_values, active_days} = prepareDailyActivity(commit_days, daily);
+        this.setHeatmap(years, max_values.commits);
     }
 
     setHeatmap(years, max_commits) {

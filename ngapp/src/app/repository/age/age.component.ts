@@ -43,48 +43,10 @@ export class AgeComponent implements OnInit {
     }
 
     setRepoActivity(data) {
-        const years = {};
-        const daily = Object.keys(data.by_time.daily.commits);
-        const max_values = {
-            commits: 0,
-            insertions: 0,
-            deletions: 0
-        };
-
-        daily.forEach(day => {
-            const [y] = day.split('-');
-            this.active_days += 1;
-
-            const commits = data.by_time.daily.commits[day];
-            const insertions = data.by_time.daily.insertions[day];
-            const deletions = data.by_time.daily.deletions[day];
-
-            if (commits > max_values.commits) {
-                max_values.commits = commits;
-            }
-
-            if (insertions && insertions > max_values.insertions) {
-                max_values.insertions = insertions;
-            }
-
-            if (deletions && deletions > max_values.deletions) {
-                max_values.deletions = deletions;
-            }
-
-            const row = {
-                day,
-                commits,
-                insertions,
-                deletions
-            };
-
-            if (years[y]) {
-                years[y].push(row);
-            } else {
-                years[y] = [row];
-            }
-        });
-
+        const daily = data.by_time.daily;
+        const commit_days = Object.keys(daily.commits);
+        const {years, max_values, active_days} = prepareDailyActivity(commit_days, daily);
+        this.active_days = active_days;
         this.years = years;
         this.max_values = max_values;
         this.setHeatmap(this.chart_type);
@@ -95,6 +57,52 @@ export class AgeComponent implements OnInit {
         this.charts = commitCalender(this.years, this.max_values[chart_type], chart_type);
     }
 }
+
+export const prepareDailyActivity = (commit_days, daily) => {
+    const years = {};
+    const max_values = {
+        commits: 0,
+        insertions: 0,
+        deletions: 0
+    };
+    let active_days = 0;
+
+    commit_days.forEach(day => {
+        const [y] = day.split('-');
+        active_days += 1;
+
+        const commits = daily.commits[day];
+        const insertions = daily.insertions[day];
+        const deletions = daily.deletions[day];
+
+        if (commits > max_values.commits) {
+            max_values.commits = commits;
+        }
+
+        if (insertions && insertions > max_values.insertions) {
+            max_values.insertions = insertions;
+        }
+
+        if (deletions && deletions > max_values.deletions) {
+            max_values.deletions = deletions;
+        }
+
+        const row = {
+            day,
+            commits,
+            insertions,
+            deletions
+        };
+
+        if (years[y]) {
+            years[y].push(row);
+        } else {
+            years[y] = [row];
+        }
+    });
+
+    return {years, max_values, active_days};
+};
 
 export const commitCalender = (years, max_value, chart_type) => {
     return Object.keys(years).sort((a, b) => {
