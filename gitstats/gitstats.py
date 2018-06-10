@@ -28,8 +28,6 @@ class GitStats:
         """
         Main runner
         """
-        self._prepare_workdir()
-
         self.update_repos()
         self.repo_summary()
         self.repo_lines()
@@ -219,14 +217,26 @@ class GitStats:
             logger.info(f'{repo} authors lines updated')
 
     def _prepare_workdir(self):
-        self.workdir = self.config.GLOBAL['workdir']
-        logger.debug(f'Output folder {self.workdir}')
+        workdir = self.config.GLOBAL['workdir']
+        logger.debug(f'Working folder {workdir}')
 
-        self.repos_dir = os.path.join(self.workdir, 'repos')
-        self.data_dir = os.path.join(self.workdir, 'data')
+        self._repos_dir = os.path.join(workdir, 'repos')
+        self._data_dir = os.path.join(workdir, 'data')
 
-        os.makedirs(self.repos_dir, exist_ok=True)
-        os.makedirs(self.data_dir, exist_ok=True)
+        os.makedirs(self._repos_dir, exist_ok=True)
+        os.makedirs(self._data_dir, exist_ok=True)
+
+    @property
+    def repos_dir(self):
+        if not hasattr(self, '_repos_dir'):
+            self._prepare_workdir()
+        return self._repos_dir
+
+    @property
+    def data_dir(self):
+        if not hasattr(self, '_data_dir'):
+            self._prepare_workdir()
+        return self._data_dir
 
     def save_data(self, data, fname, folders=''):
         utils.save_json(data, self.data_dir, fname, folders)
