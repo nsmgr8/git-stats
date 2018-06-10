@@ -79,9 +79,10 @@ export class AuthorComponent implements OnInit {
     setHeatmap(years, max_commits) {
         this.charts = Object.keys(years).sort((a, b) => {
             return +b - +a;
-        }).map((year, yi) => ({
+        }).map(year => ({
             tooltip: {
                 position: 'top',
+                confine: true,
                 formatter: value => {
                     const data = years[year][value.dataIndex];
                     return `
@@ -124,10 +125,9 @@ export class AuthorComponent implements OnInit {
             visualMap: {
                 min: 0,
                 max: max_commits,
-                show: yi === 0,
-                orient: 'horizontal',
-                left: 'center',
-                top: 'top'
+                inRange: {
+                    color: ['#eee', '#7bc96f', '#196127']
+                }
             },
 
             calendar: [{

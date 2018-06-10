@@ -100,6 +100,7 @@ export class AgeComponent implements OnInit {
         }).map(year => ({
             tooltip: {
                 position: 'top',
+                confine: true,
                 formatter: value => {
                     const data = years[year][value.dataIndex];
                     return `
@@ -141,7 +142,10 @@ export class AgeComponent implements OnInit {
 
             visualMap: {
                 min: 0,
-                max: max_value
+                max: max_value,
+                inRange: {
+                    color: ['#eee', '#7bc96f', '#196127']
+                }
             },
 
             calendar: [{
