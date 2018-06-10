@@ -39,24 +39,31 @@
             <tbody>
                 <tr>
                     <td>Commits</td>
-                    <td *ngFor="let i of hours" class="text-right">
+                    <td *ngFor="let i of hours" class="text-right"
+                        [style.backgroundColor]="hour_colors[i]?.commits">
                         {{ author_data?.at_hour?.commits[i] }}
                     </td>
                 </tr>
                 <tr>
                     <td>Lines Added</td>
-                    <td *ngFor="let i of hours" class="text-right">
+                    <td *ngFor="let i of hours" class="text-right"
+                        [style.backgroundColor]="hour_colors[i]?.insertions">
                         {{ author_data?.at_hour?.insertions[i] }}
                     </td>
                 </tr>
                 <tr>
                     <td>Lines Removed</td>
-                    <td *ngFor="let i of hours" class="text-right">
+                    <td *ngFor="let i of hours" class="text-right"
+                        [style.backgroundColor]="hour_colors[i]?.deletions">
                         {{ author_data?.at_hour?.deletions[i] }}
                     </td>
                 </tr>
             </tbody>
         </table>
+    </div>
+
+    <div class="card-footer text-center">
+        Author: <strong>{{ author }}</strong>
     </div>
 
     <div class="embed-responsive">
