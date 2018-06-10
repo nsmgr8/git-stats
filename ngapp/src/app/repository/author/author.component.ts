@@ -15,8 +15,15 @@ export class AuthorComponent implements OnInit {
     author;
     repo;
 
-    charts;
     active_days = 0;
+    years;
+    max_values = {
+        commits: 0,
+        insertions: 0,
+        deletions: 0
+    };
+    charts = [];
+    chart_type = 'commits';
 
     hours = Array.from({length: 24}, (_, i) => i);
 
@@ -46,10 +53,14 @@ export class AuthorComponent implements OnInit {
         const daily = data.by_authors[this.author].daily;
         const commit_days = Object.keys(daily.commits);
         const {years, max_values, active_days} = prepareDailyActivity(commit_days, daily);
-        this.setHeatmap(years, max_values.commits);
+        this.active_days = active_days;
+        this.years = years;
+        this.max_values = max_values;
+        this.setHeatmap(this.chart_type);
     }
 
-    setHeatmap(years, max_commits) {
-        this.charts = commitCalender(years, max_commits, 'commits');
+    setHeatmap(chart_type) {
+        this.chart_type = chart_type;
+        this.charts = commitCalender(this.years, this.max_values[chart_type], chart_type);
     }
 }

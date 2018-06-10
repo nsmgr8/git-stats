@@ -1,6 +1,28 @@
 <div class="card mt-2">
-    <div class="card-header bg-secondary text-white">
-        Activity ({{ active_days }} active days)
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+        <div>
+            Activity ({{ active_days }} active days)
+        </div>
+        <div class="btn-group btn-group-sm btn-group-toggle" role="group">
+            <button class="btn btn-sm btn-light"
+                    type="button"
+                    [ngClass]="{'active': chart_type === 'commits'}"
+                    (click)="setHeatmap('commits')">
+                Commits
+            </button>
+            <button class="btn btn-sm btn-light"
+                    type="button"
+                    [ngClass]="{'active': chart_type === 'insertions'}"
+                    (click)="setHeatmap('insertions')">
+                Lines Added
+            </button>
+            <button class="btn btn-sm btn-light"
+                    type="button"
+                    [ngClass]="{'active': chart_type === 'deletions'}"
+                    (click)="setHeatmap('deletions')">
+                Lines Removed
+            </button>
+        </div>
     </div>
 
     <div class="table-responsive">
