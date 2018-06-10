@@ -92,10 +92,12 @@ export class AgeComponent implements OnInit {
 
     setHeatmap(chart_type) {
         this.chart_type = chart_type;
-        const years = this.years;
-        const max_value = this.max_values[chart_type];
+        this.charts = commitCalender(this.years, this.max_values[chart_type], chart_type);
+    }
+}
 
-        this.charts = Object.keys(years).sort((a, b) => {
+export const commitCalender = (years, max_value, chart_type) => {
+    return Object.keys(years).sort((a, b) => {
             return +b - +a;
         }).map(year => ({
             tooltip: {
@@ -103,40 +105,7 @@ export class AgeComponent implements OnInit {
                 confine: true,
                 formatter: value => {
                     const data = years[year][value.dataIndex];
-                    return `
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th colspan="2">
-                                        ${data.day}
-                                    </th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                <tr>
-                                    <th>Commits</th>
-                                    <td class="text-right">
-                                        ${data.commits}
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <th>Lines Added</th>
-                                    <td class="text-right">
-                                        ${data.insertions}
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <th>Lines Removed</th>
-                                    <td class="text-right">
-                                        ${data.deletions}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    `;
+                    return tooltip(data);
                 }
             },
 
@@ -160,5 +129,39 @@ export class AgeComponent implements OnInit {
                 data: years[year].map(x => [x.day, x[chart_type]])
             }]
         }));
-    }
-}
+};
+
+const tooltip = (data) => {
+    return `
+        <div class="card bg-dark">
+            <div class="card-header bg-danger text-white py-1">
+                ${data.day}
+            </div>
+
+            <table class="table-sm">
+                <tbody>
+                    <tr>
+                        <th>Commits</th>
+                        <td class="text-right">
+                            ${data.commits}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Lines Added</th>
+                        <td class="text-right">
+                            ${data.insertions}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Lines Removed</th>
+                        <td class="text-right">
+                            ${data.deletions}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    `;
+};

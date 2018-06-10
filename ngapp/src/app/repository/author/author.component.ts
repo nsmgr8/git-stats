@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { RepositoriesService } from '../../services/repositories.service';
+import { commitCalender } from '../age/age.component';
 
 @Component({
     selector: 'app-author',
@@ -77,70 +78,6 @@ export class AuthorComponent implements OnInit {
     }
 
     setHeatmap(years, max_commits) {
-        this.charts = Object.keys(years).sort((a, b) => {
-            return +b - +a;
-        }).map(year => ({
-            tooltip: {
-                position: 'top',
-                confine: true,
-                formatter: value => {
-                    const data = years[year][value.dataIndex];
-                    return `
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th colspan="2">
-                                        ${data.day}
-                                    </th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                <tr>
-                                    <th>Commits</th>
-                                    <td class="text-right">
-                                        ${data.commits}
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <th>Lines Added</th>
-                                    <td class="text-right">
-                                        ${data.insertions}
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <th>Lines Removed</th>
-                                    <td class="text-right">
-                                        ${data.deletions}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    `;
-                }
-            },
-
-            visualMap: {
-                min: 0,
-                max: max_commits,
-                inRange: {
-                    color: ['#eee', '#7bc96f', '#196127']
-                }
-            },
-
-            calendar: [{
-                range: year,
-                cellSize: ['auto', 20]
-            }],
-
-            series: [{
-                type: 'heatmap',
-                coordinateSystem: 'calendar',
-                calendarIndex: 0,
-                data: years[year].map(x => [x.day, x.commits])
-            }]
-        }));
+        this.charts = commitCalender(years, max_commits, 'commits');
     }
 }
