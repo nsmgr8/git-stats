@@ -202,3 +202,37 @@ def test_activity(mocker):
     }
     assert json.loads(json.dumps(gitstats.activity('/', 'tmp'))) == result
     assert_subprocess_run('git log --shortstat --pretty=format:"%at %T %aN" HEAD')
+
+
+def test_summary(mocker):
+    run = mocker.patch('subprocess.run')
+    run.side_effect = [
+        # empty sha generator
+        CompletedProcessMock('1234'),
+        # diff --shortstat
+        CompletedProcessMock(' 98 files changed, 10564 insertions(+)'),
+        # shortlog -s
+        CompletedProcessMock('    93  M Nasimul Haque'),
+        # rev-list --count HEAD
+        CompletedProcessMock('93'),
+        # branch -r
+        CompletedProcessMock('origin/master'),
+        # log --reverse %at
+        CompletedProcessMock('1527621944\n1527761990\n1527763244'),
+        # log %at -n1
+        CompletedProcessMock('1528755935'),
+        # show-ref --tags
+        CompletedProcessMock('refs/tags/v1'),
+    ]
+    result = {
+        'data': [
+            {'key': 'files', 'value': '98'},
+            {'key': 'lines', 'notes': 'includes empty lines', 'value': '10564'},
+            {'key': 'authors', 'value': 1},
+            {'key': 'commits', 'notes': 'master only', 'value': '93'},
+            {'key': 'branches', 'value': 1},
+            {'key': 'tags', 'value': 1},
+            {'key': 'age', 'notes': 'active days since creation', 'value': 14}],
+        'repo': 'tmp',
+    }
+    assert gitstats.summary('/', 'tmp') == result
