@@ -19,7 +19,7 @@ author M Nasimul Haque
 ...
 filename file.txt
 	line two
-"""
+"""     # flake8: noqa
 
 
 def assert_subprocess_run(cmd):
