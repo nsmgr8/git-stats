@@ -202,7 +202,7 @@ class GitStats:
                         'revision': files_to_blame[result['file']],
                     }
 
-            self.save_data(authors, 'files-authors.json', repo)
+                    self.save_data(authors, 'files-authors.json', repo)
 
             authors_counts = {
                 'lines': defaultdict(int),
