@@ -1,3 +1,4 @@
+import json
 import subprocess
 from . import gitstats
 
@@ -20,6 +21,14 @@ author M Nasimul Haque
 filename file.txt
 	line two
 """     # flake8: noqa
+
+shortlog_text = """\
+1528753992 dcc3c393 M Nasimul Haque
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+1528753813 a36e16b3 M Nasimul Haque
+ 1 file changed, 3 insertions(+)
+"""
 
 
 def assert_subprocess_run(cmd):
@@ -113,3 +122,83 @@ def test_count_lines(mocker):
     result = {'data': {'lines': {'lines': 'data from cloc'}}, 'repo': 'tmp'}
     assert gitstats.count_lines('/', 'tmp') == result
     assert_subprocess_run('cloc --vcs git --json')
+
+
+def test_activity(mocker):
+    run = mocker.patch('subprocess.run')
+    run.return_value = CompletedProcessMock(shortlog_text)
+    result = {
+        'data': {
+            'authors_age': {
+                'M Nasimul Haque': {
+                    'days': 1,
+                    'first_commit': 1528753813,
+                    'last_commit': 1528753992,
+                },
+            },
+            'by_authors': {
+                'M Nasimul Haque': {
+                    'at_hour': {
+                        'commits': {'22': 2},
+                        'deletions': {'22': 1},
+                        'insertions': {'22': 4},
+                    },
+                    'daily': {
+                        'commits': {'2018-06-11': 2},
+                        'deletions': {'2018-06-11': 1},
+                        'insertions': {'2018-06-11': 4},
+                    },
+                    'monthly': {
+                        'commits': {'2018-06': 2},
+                        'deletions': {'2018-06': 1},
+                        'insertions': {'2018-06': 4},
+                    },
+                    'weekly': {
+                        'commits': {'2018-24': 2},
+                        'deletions': {'2018-24': 1},
+                        'insertions': {'2018-24': 4},
+                    },
+                    'yearly': {
+                        'commits': {'2018': 2},
+                        'deletions': {'2018': 1},
+                        'insertions': {'2018': 4},
+                    },
+                }
+            },
+            'by_time': {
+                'at_hour': {
+                    'commits': {'22': 2},
+                    'deletions': {'22': 1},
+                    'insertions': {'22': 4},
+                },
+                'daily': {
+                    'commits': {'2018-06-11': 2},
+                    'deletions': {'2018-06-11': 1},
+                    'insertions': {'2018-06-11': 4},
+                },
+                'monthly': {
+                    'commits': {'2018-06': 2},
+                    'deletions': {'2018-06': 1},
+                    'insertions': {'2018-06': 4},
+                },
+                'weekly': {
+                    'commits': {'2018-24': 2},
+                    'deletions': {'2018-24': 1},
+                    'insertions': {'2018-24': 4},
+                },
+                'yearly': {
+                    'commits': {'2018': 2},
+                    'deletions': {'2018': 1},
+                    'insertions': {'2018': 4},
+                },
+            },
+            'hour_of_week': {'0': {'22': 2}},
+        },
+        'repo': 'tmp',
+        'revisions': [
+            {'revision': 'dcc3c393', 'timestamp': 1528753992},
+            {'revision': 'a36e16b3', 'timestamp': 1528753813},
+        ],
+    }
+    assert json.loads(json.dumps(gitstats.activity('/', 'tmp'))) == result
+    assert_subprocess_run('git log --shortstat --pretty=format:"%at %T %aN" HEAD')
