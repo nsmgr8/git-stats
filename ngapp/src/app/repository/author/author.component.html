@@ -63,7 +63,17 @@
     </div>
 
     <div class="card-footer text-center">
-        Author: <strong>{{ author }}</strong>
+        <strong>{{ author }}</strong>
+        <br>
+        has
+        <strong class="text-success">
+            {{ lines.lines | number }}
+        </strong>
+        lines in
+        <strong class="text-success">
+            {{ lines.files | number }}
+        </strong>
+        files
     </div>
 
     <div class="embed-responsive">

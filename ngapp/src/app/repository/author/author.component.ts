@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { RepositoriesService } from '../../services/repositories.service';
@@ -10,10 +10,11 @@ import { makeColor } from '../commits/commits.component';
     templateUrl: './author.component.html',
     styleUrls: ['./author.component.styl']
 })
-export class AuthorComponent implements OnInit {
-    subscription;
+export class AuthorComponent implements OnInit, OnDestroy {
+    subscriptions = new Set<any>();
     author_data;
     author;
+    lines: any = {};
     repo;
 
     active_days = 0;
@@ -41,13 +42,21 @@ export class AuthorComponent implements OnInit {
         );
     }
 
+    ngOnDestroy() {
+        this.subscriptions.forEach(x => x.unsubscribe());
+    }
+
     getRepo({name, author}: any) {
         this.repo = name;
         this.author = author;
-        this.subscription = this.repoService.getRepoActivity(name)
-            .subscribe(
-                data => this.setRepoActivity(data)
-            );
+        this.subscriptions.add(
+            this.repoService.getRepoActivity(name)
+                .subscribe(data => this.setRepoActivity(data))
+        );
+        this.subscriptions.add(
+            this.repoService.getAuthors(name)
+                .subscribe(data => this.setAuthor(data))
+        );
     }
 
     setRepoActivity(data) {
@@ -76,5 +85,12 @@ export class AuthorComponent implements OnInit {
                 deletions: makeColor(this.author_data.at_hour.deletions[h], this.max_values.deletions)
             };
         });
+    }
+
+    setAuthor(data) {
+        this.lines = {
+            lines: data.lines[this.author],
+            files: data.files[this.author],
+        };
     }
 }
