@@ -1,10 +1,10 @@
 <div class="container-fluid mt-2">
     <div class="card">
-        <div class="card-header bg-info text-white">
+        <div class="card-header bg-info text-white py-1">
             Repository: <strong>{{ repo }}</strong>
         </div>
 
-        <div class="card-body table-info">
+        <div class="card-body table-info p-2">
             <div class="row text-center">
                 <div class="col mb-2" *ngFor="let row of summary">
 
@@ -15,17 +15,17 @@
                        [ngbTooltip]="row.notes | titlecase">
 
                         <div class="card shadow">
-                            <div class="card-body text-dark"
+                            <div class="card-body text-dark py-1"
                                  [ngClass]="{
                                  'alert-success': !rla.isActive,
                                  'alert-warning': rla.isActive
                                  }">
-                                <div class="h2">
+                                <div class="h2 m-0">
                                     {{ row.value | number }}
                                 </div>
                             </div>
 
-                            <div class="card-footer"
+                            <div class="card-footer py-1"
                                  [ngClass]="{
                                  'bg-success text-white': !rla.isActive,
                                  'bg-warning text-dark': rla.isActive
