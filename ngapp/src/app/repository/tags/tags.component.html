@@ -27,7 +27,7 @@
                         {{ row.timestamp | date }}
                     </td>
                     <td>
-                        <span *ngFor="let col of row.authors; let odd=odd"
+                        <span *ngFor="let col of row.authors.slice(0, 20); let odd=odd"
                             class="mr-2">
                             <span [ngClass]="{'text-secondary': odd}">
                                 {{ col.author }}
@@ -36,6 +36,10 @@
                                 {{ col.commits }}
                             </sub>
                         </span>
+                        <div *ngIf="row.authors.length > 20"
+                            class="text-info">
+                            {{ row.authors.length - 20 }} more authors...
+                        </div>
                     </td>
                 </tr>
             </tbody>
