@@ -111,9 +111,9 @@
                                 {{ row.data[0].author }}
                             </a>
                         </th>
-                        <td class="text-right">{{ row.data[0].commits }}</td>
-                        <td class="text-right text-success">{{ row.data[0].insertions }}</td>
-                        <td class="text-right text-danger">{{ row.data[0].deletions }}</td>
+                        <td class="text-right">{{ row.data[0].commits | number }}</td>
+                        <td class="text-right text-success">{{ row.data[0].insertions | number }}</td>
+                        <td class="text-right text-danger">{{ row.data[0].deletions | number }}</td>
                         <td class="text-right show-others">
                             <button class="btn btn-outline-info btn-sm"
                                     (click)="row.show_others = !row.show_others">
@@ -141,9 +141,9 @@
                                                 {{ col.author }}
                                             </a>
                                         </td>
-                                        <td class="text-right">{{ col.commits }}</td>
-                                        <td class="text-right text-success">{{ col.insertions }}</td>
-                                        <td class="text-right text-danger">{{ col.deletions }}</td>
+                                        <td class="text-right">{{ col.commits | number }}</td>
+                                        <td class="text-right text-success">{{ col.insertions | number }}</td>
+                                        <td class="text-right text-danger">{{ col.deletions | number }}</td>
                                     </tr>
                                 </tbody>
                             </table>

@@ -38,7 +38,7 @@
                     </th>
                     <td *ngFor="let week of hour"
                         [style.backgroundColor]="week.color">
-                        {{ week.value }}
+                        {{ week.value | number }}
                     </td>
                     <th class="table-active">
                         <small class="text-muted">
@@ -46,7 +46,7 @@
                         </small>
                     </th>
                     <th class="table-active">
-                        {{ activity.by_time.at_hour.commits[i] }}
+                        {{ activity.by_time.at_hour.commits[i] | number }}
                     </th>
                 </tr>
             </tbody>
@@ -55,13 +55,13 @@
                 <tr class="table-active">
                     <th>Total</th>
                     <th *ngFor="let commit of weekdays_total">
-                        {{ commit }}<br>
+                        {{ commit | number }}<br>
                         <small class="text-muted">
                             {{ commit / total_commit | percent:'.1' }}
                         </small>
                     </th>
                     <th colspan="2">
-                        {{ total_commit }}
+                        {{ total_commit | number }}
                     </th>
                 </tr>
             </tfoot>
@@ -91,9 +91,9 @@
                     <tbody>
                         <tr *ngFor="let row of period.value">
                             <td>{{ row.period | period:period.type }}</td>
-                            <td class="text-right">{{ row.commits }}</td>
-                            <td class="text-right text-success">{{ row.insertions }}</td>
-                            <td class="text-right text-danger">{{ row.deletions }}</td>
+                            <td class="text-right">{{ row.commits | number }}</td>
+                            <td class="text-right text-success">{{ row.insertions | number }}</td>
+                            <td class="text-right text-danger">{{ row.deletions | number }}</td>
                         </tr>
                     </tbody>
                 </table>

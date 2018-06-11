@@ -46,31 +46,31 @@
             <tbody>
                 <tr *ngFor="let row of lines">
                     <th>{{ row.lang }}</th>
-                    <td class="text-right">{{ row.nFiles }}</td>
+                    <td class="text-right">{{ row.nFiles | number }}</td>
 
                     <td class="text-right">
-                        {{ row.blank }}
+                        {{ row.blank | number }}
                         <div class="small text-muted">
                             {{ row.blank / row.total | percent }}
                         </div>
                     </td>
 
                     <td class="text-right">
-                        {{ row.comment }}
+                        {{ row.comment | number }}
                         <div class="small text-muted">
                             {{ row.comment / row.total | percent }}
                         </div>
                     </td>
 
                     <td class="text-right">
-                        {{ row.code }}
+                        {{ row.code | number }}
                         <div class="small text-muted">
                             {{ row.code / row.total | percent }}
                         </div>
                     </td>
 
                     <th class="text-right table-active">
-                        {{ row.total }}
+                        {{ row.total | number }}
                     </th>
                 </tr>
             </tbody>
@@ -78,11 +78,11 @@
             <tfoot *ngIf="lines_total">
                 <tr class="table-active">
                     <th>Total</th>
-                    <th class="text-right">{{ lines_total.nFiles }}</th>
-                    <th class="text-right">{{ lines_total.blank }}</th>
-                    <th class="text-right">{{ lines_total.comment }}</th>
-                    <th class="text-right">{{ lines_total.code }}</th>
-                    <th class="text-right table-active">{{ lines_total.total }}</th>
+                    <th class="text-right">{{ lines_total.nFiles | number }}</th>
+                    <th class="text-right">{{ lines_total.blank | number }}</th>
+                    <th class="text-right">{{ lines_total.comment | number }}</th>
+                    <th class="text-right">{{ lines_total.code | number }}</th>
+                    <th class="text-right table-active">{{ lines_total.total | number }}</th>
                 </tr>
             </tfoot>
         </table>

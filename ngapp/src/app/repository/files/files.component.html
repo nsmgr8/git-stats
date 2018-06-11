@@ -30,13 +30,13 @@
                         </a>
                     </th>
                     <td class="text-right">
-                        {{ row.lines }}
+                        {{ row.lines | number }}
                     </td>
                     <td class="text-right small text-muted">
                         {{ row.lines / summary.lines | percent:'0.2' }}
                     </td>
                     <td class="text-right">
-                        {{ row.files }}
+                        {{ row.files | number }}
                     </td>
                     <td class="text-right small text-muted">
                         {{ row.files / summary.files | percent:'0.2' }}
