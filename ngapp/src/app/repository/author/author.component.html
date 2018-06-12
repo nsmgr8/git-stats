@@ -69,10 +69,16 @@
         <strong class="text-success">
             {{ lines.lines | number }}
         </strong>
+        <small class="text-muted">
+            {{ lines.lines / summary.lines | percent }}
+        </small>
         lines in
         <strong class="text-success">
             {{ lines.files | number }}
         </strong>
+        <small class="text-muted">
+            {{ lines.files / summary.files | percent }}
+        </small>
         files
     </div>
 

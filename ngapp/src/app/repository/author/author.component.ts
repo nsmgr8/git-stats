@@ -15,6 +15,7 @@ export class AuthorComponent implements OnInit, OnDestroy {
     author_data;
     author;
     lines: any = {};
+    summary: any = {};
     repo;
 
     active_days = 0;
@@ -57,6 +58,10 @@ export class AuthorComponent implements OnInit, OnDestroy {
             this.repoService.getAuthors(name)
                 .subscribe(data => this.setAuthor(data))
         );
+        this.subscriptions.add(
+            this.repoService.getRepoSummary(name)
+                .subscribe(data => this.setLines(data))
+        );
     }
 
     setRepoActivity(data) {
@@ -92,5 +97,11 @@ export class AuthorComponent implements OnInit, OnDestroy {
             lines: data.lines[this.author],
             files: data.files[this.author],
         };
+    }
+
+    setLines(data) {
+        const summary = {};
+        data.forEach(x => summary[x.key] = x.value);
+        this.summary = summary;
     }
 }
