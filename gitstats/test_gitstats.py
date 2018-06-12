@@ -45,6 +45,13 @@ def test_clone(mocker):
     assert_subprocess_run('git clone bar foo')
 
 
+def test_clone_on_exception(mocker):
+    run = mocker.patch('subprocess.run')
+    run.side_effect = Exception('failed')
+    gitstats.clone('/tmp', 'foo', 'bar')
+    assert_subprocess_run('git clone bar foo')
+
+
 def test_get_timestamp(mocker):
     run = mocker.patch('subprocess.run')
     run.return_value = CompletedProcessMock('123456')
@@ -79,7 +86,7 @@ def test_get_blame_on_exception(mocker):
 
 def test_get_branches(mocker):
     run = mocker.patch('subprocess.run')
-    run.return_value = CompletedProcessMock('b1\nb2')
+    run.return_value = CompletedProcessMock('b1\nb2\nb3 HEAD')
     result = {'branches': ['b1', 'b2'], 'repo': 'tmp'}
     assert gitstats.get_branches('/', 'tmp') == result
     assert_subprocess_run('git branch -r')
@@ -120,6 +127,14 @@ def test_count_lines(mocker):
     run = mocker.patch('subprocess.run')
     run.return_value = CompletedProcessMock('{"lines": "data from cloc"}')
     result = {'data': {'lines': {'lines': 'data from cloc'}}, 'repo': 'tmp'}
+    assert gitstats.count_lines('/', 'tmp') == result
+    assert_subprocess_run('cloc --vcs git --json')
+
+
+def test_count_lines_on_exception(mocker):
+    run = mocker.patch('subprocess.run')
+    run.side_effect = Exception('failed')
+    result = {'data': {'lines': []}, 'repo': 'tmp'}
     assert gitstats.count_lines('/', 'tmp') == result
     assert_subprocess_run('cloc --vcs git --json')
 
@@ -236,3 +251,65 @@ def test_summary(mocker):
         'repo': 'tmp',
     }
     assert gitstats.summary('/', 'tmp') == result
+
+
+def test_summary_on_exception(mocker):
+    run = mocker.patch('subprocess.run')
+    run.side_effect = [
+        # empty sha generator
+        CompletedProcessMock('1234'),
+        # diff --shortstat
+        CompletedProcessMock(' 98 files changed, 10564 insertions(+)'),
+        # shortlog -s
+        CompletedProcessMock('    93  M Nasimul Haque'),
+        # rev-list --count HEAD
+        CompletedProcessMock('93'),
+        # branch -r
+        CompletedProcessMock('origin/master'),
+        # log --reverse %at
+        CompletedProcessMock('1527621944\n1527761990\n1527763244'),
+        # log %at -n1
+        CompletedProcessMock('1528755935'),
+        # show-ref --tags
+        Exception('refs/tags/v1'),
+    ]
+    result = {
+        'data': [
+            {'key': 'files', 'value': '98'},
+            {'key': 'lines', 'notes': 'includes empty lines', 'value': '10564'},
+            {'key': 'authors', 'value': 1},
+            {'key': 'commits', 'notes': 'master only', 'value': '93'},
+            {'key': 'branches', 'value': 1},
+            {'key': 'tags', 'value': 0},
+            {'key': 'age', 'notes': 'active days since creation', 'value': 14}],
+        'repo': 'tmp',
+    }
+    assert gitstats.summary('/', 'tmp') == result
+
+
+def test_update_repo(mocker):
+    run = mocker.patch('subprocess.run')
+    run.side_effect = [
+        # clone
+        CompletedProcessMock(''),
+        # pull --tags
+        CompletedProcessMock(''),
+        # log --pretty=format:"%H %at %aN" -n1
+        CompletedProcessMock('head 23456 author'),
+        # log --reverse --pretty=format:"%at"
+        CompletedProcessMock('12345'),
+    ]
+    result = {
+        'HEAD': 'head',
+        'author': 'author',
+        'date': 23456,
+        'name': 'tmp',
+        'start_date': 12345,
+    }
+    assert gitstats.update_repo('/', ['tmp', 'https://example.com']) == result
+
+
+def test_update_repo_on_exception(mocker):
+    run = mocker.patch('subprocess.run')
+    run.side_effect = Exception('')
+    assert gitstats.update_repo('/', ['tmp', 'https://example.com']) == {}
