@@ -1,6 +1,6 @@
 import json
 import subprocess
-from . import gitstats
+from . import collectors
 
 
 class CompletedProcessMock:
@@ -41,14 +41,14 @@ def assert_subprocess_run(cmd):
 
 def test_clone(mocker):
     mocker.patch('subprocess.run')
-    gitstats.clone('/tmp', 'foo', 'bar')
+    collectors.clone('/tmp', 'foo', 'bar')
     assert_subprocess_run('git clone bar foo')
 
 
 def test_clone_on_exception(mocker):
     run = mocker.patch('subprocess.run')
     run.side_effect = Exception('failed')
-    gitstats.clone('/tmp', 'foo', 'bar')
+    collectors.clone('/tmp', 'foo', 'bar')
     assert_subprocess_run('git clone bar foo')
 
 
@@ -56,7 +56,7 @@ def test_get_timestamp(mocker):
     run = mocker.patch('subprocess.run')
     run.return_value = CompletedProcessMock('123456')
     result = {'timestamp': 123456, 'revision': 'bar'}
-    assert gitstats.get_timestamp('/', 'tmp', 'bar') == result
+    assert collectors.get_timestamp('/', 'tmp', 'bar') == result
     assert_subprocess_run('git log --pretty=format:"%at" -n 1 bar')
 
 
@@ -64,7 +64,7 @@ def test_get_blame(mocker):
     run = mocker.patch('subprocess.run')
     run.return_value = CompletedProcessMock(blame_text)
     result = {'authors': {'M Nasimul Haque': 2}, 'file': 'file.txt'}
-    assert gitstats.get_blame('/', 'tmp', False, 'file.txt') == result
+    assert collectors.get_blame('/', 'tmp', False, 'file.txt') == result
     assert_subprocess_run('git blame --line-porcelain  -w file.txt')
 
 
@@ -72,7 +72,7 @@ def test_get_blame_detect_move(mocker):
     run = mocker.patch('subprocess.run')
     run.return_value = CompletedProcessMock(blame_text)
     result = {'authors': {'M Nasimul Haque': 2}, 'file': 'file.txt'}
-    assert gitstats.get_blame('/', 'tmp', True, 'file.txt') == result
+    assert collectors.get_blame('/', 'tmp', True, 'file.txt') == result
     assert_subprocess_run('git blame --line-porcelain -C -C -C -M -w file.txt')
 
 
@@ -80,7 +80,7 @@ def test_get_blame_on_exception(mocker):
     run = mocker.patch('subprocess.run')
     run.side_effect = Exception('failed')
     result = {'authors': {}, 'file': 'file.txt'}
-    assert gitstats.get_blame('/', 'tmp', False, 'file.txt') == result
+    assert collectors.get_blame('/', 'tmp', False, 'file.txt') == result
     assert_subprocess_run('git blame --line-porcelain  -w file.txt')
 
 
@@ -88,7 +88,7 @@ def test_get_branches(mocker):
     run = mocker.patch('subprocess.run')
     run.return_value = CompletedProcessMock('b1\nb2\nb3 HEAD')
     result = {'branches': ['b1', 'b2'], 'repo': 'tmp'}
-    assert gitstats.get_branches('/', 'tmp') == result
+    assert collectors.get_branches('/', 'tmp') == result
     assert_subprocess_run('git branch -r')
 
 
@@ -102,7 +102,7 @@ def test_get_tags(mocker):
         ],
         'repo': 'tmp',
     }
-    assert gitstats.get_tags('/', 'tmp') == result
+    assert collectors.get_tags('/', 'tmp') == result
     assert_subprocess_run('git show-ref --tags')
 
 
@@ -110,7 +110,7 @@ def test_get_tags_on_exception(mocker):
     run = mocker.patch('subprocess.run')
     run.side_effect = Exception('failed')
     result = {'repo': 'tmp', 'tags': []}
-    assert gitstats.get_tags('/', 'tmp') == result
+    assert collectors.get_tags('/', 'tmp') == result
     assert_subprocess_run('git show-ref --tags')
 
 
@@ -119,7 +119,7 @@ def test_num_files(mocker):
     run.return_value = CompletedProcessMock('f1\nf2')
     result = {'12345': {'files': 2, 'timestamp': 12345}}
     revision = {'revision': '12345', 'timestamp': 12345}
-    assert gitstats.num_files('/', 'tmp', revision) == result
+    assert collectors.num_files('/', 'tmp', revision) == result
     assert_subprocess_run('git ls-tree -r --name-only 12345')
 
 
@@ -127,7 +127,7 @@ def test_count_lines(mocker):
     run = mocker.patch('subprocess.run')
     run.return_value = CompletedProcessMock('{"lines": "data from cloc"}')
     result = {'data': {'lines': {'lines': 'data from cloc'}}, 'repo': 'tmp'}
-    assert gitstats.count_lines('/', 'tmp') == result
+    assert collectors.count_lines('/', 'tmp') == result
     assert_subprocess_run('cloc --vcs git --json')
 
 
@@ -135,7 +135,7 @@ def test_count_lines_on_exception(mocker):
     run = mocker.patch('subprocess.run')
     run.side_effect = Exception('failed')
     result = {'data': {'lines': []}, 'repo': 'tmp'}
-    assert gitstats.count_lines('/', 'tmp') == result
+    assert collectors.count_lines('/', 'tmp') == result
     assert_subprocess_run('cloc --vcs git --json')
 
 
@@ -215,7 +215,7 @@ def test_activity(mocker):
             {'revision': 'a36e16b3', 'timestamp': 1528753813},
         ],
     }
-    assert json.loads(json.dumps(gitstats.activity('/', 'tmp'))) == result
+    assert json.loads(json.dumps(collectors.activity('/', 'tmp'))) == result
     assert_subprocess_run('git log --shortstat --pretty=format:"%at %T %aN" HEAD')
 
 
@@ -250,7 +250,7 @@ def test_summary(mocker):
             {'key': 'age', 'notes': 'active days since creation', 'value': 14}],
         'repo': 'tmp',
     }
-    assert gitstats.summary('/', 'tmp') == result
+    assert collectors.summary('/', 'tmp') == result
 
 
 def test_summary_on_exception(mocker):
@@ -284,7 +284,7 @@ def test_summary_on_exception(mocker):
             {'key': 'age', 'notes': 'active days since creation', 'value': 14}],
         'repo': 'tmp',
     }
-    assert gitstats.summary('/', 'tmp') == result
+    assert collectors.summary('/', 'tmp') == result
 
 
 def test_update_repo(mocker):
@@ -306,10 +306,10 @@ def test_update_repo(mocker):
         'name': 'tmp',
         'start_date': 12345,
     }
-    assert gitstats.update_repo('/', ['tmp', 'https://example.com']) == result
+    assert collectors.update_repo('/', ['tmp', 'https://example.com']) == result
 
 
 def test_update_repo_on_exception(mocker):
     run = mocker.patch('subprocess.run')
     run.side_effect = Exception('')
-    assert gitstats.update_repo('/', ['tmp', 'https://example.com']) == {}
+    assert collectors.update_repo('/', ['tmp', 'https://example.com']) == {}
