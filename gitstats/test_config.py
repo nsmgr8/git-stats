@@ -9,7 +9,9 @@ def test_default_conf():
     conf = config.Config()
     assert conf.force is False
     assert conf.config_path == os.path.join(utils.PROJECT_DIR, 'config.ini')
-    assert isinstance(conf.config, configparser.ConfigParser)
+    c = conf.config
+    assert isinstance(c, configparser.ConfigParser)
+    assert conf.config is c
 
 
 def test_conf_accessor():
