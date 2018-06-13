@@ -1,3 +1,5 @@
+from tempfile import TemporaryDirectory, NamedTemporaryFile
+
 from . import __main__ as main
 
 
@@ -18,3 +20,24 @@ def test_parse_command_args():
 
     args = main.parse_command_args(['-v', '-f'])
     assert vars(args) == {**default_args, 'force': True, 'verbose': True}
+
+
+def test_main(mocker):
+    gs = main.GitStats
+    main.GitStats = mocker.Mock()
+
+    with TemporaryDirectory() as tmpdir, NamedTemporaryFile() as tmp:
+        with open(tmp.name, 'w') as fh:
+            fh.write(f"""
+            [GLOBAL]
+            workdir = {tmpdir}
+
+            [REPOSITORIES]
+            repo = some.git.repo.url
+            """)
+
+        main.main(['-c', tmp.name])
+
+        main.GitStats().run.assert_called()
+
+    main.GitStats = gs
