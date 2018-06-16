@@ -2,7 +2,7 @@
     <div class="table-responsive">
         <table class="table table-bordered table-striped table-sm mt-2">
             <thead>
-                <tr>
+                <tr class="table-warning">
                     <th>Repository</th>
                     <th>Last Author</th>
                     <th>Last Commit</th>
@@ -35,6 +35,14 @@
                     </td>
                 </tr>
             </tbody>
+
+            <tfoot>
+                <tr class="table-info">
+                    <th colspan="5">
+                        Total repositories: {{ repos.length }}
+                    </th>
+                </tr>
+            </tfoot>
         </table>
     </div>
 </div>
