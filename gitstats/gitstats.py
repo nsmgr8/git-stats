@@ -9,7 +9,6 @@ from multiprocessing import Pool
 from . import utils, collectors
 
 logger = logging.getLogger(__name__)
-num_pools = max(os.cpu_count() - 1, 1)
 
 
 class GitStats:
@@ -42,7 +41,7 @@ class GitStats:
         repo_states = []
         repos = list(self.config.REPOSITORIES.items())
 
-        with Pool(num_pools) as p:
+        with Pool(self.num_pools) as p:
             for result in p.imap_unordered(
                 partial(collectors.update_repo, self.repos_dir),
                 repos
@@ -67,7 +66,7 @@ class GitStats:
         self.save_data(list(repo_states.values()), 'repos.json')
 
     def repo_summary(self):
-        with Pool(num_pools) as p:
+        with Pool(self.num_pools) as p:
             for result in p.imap_unordered(
                 partial(collectors.summary, self.repos_dir),
                 self.repos
@@ -77,7 +76,7 @@ class GitStats:
 
     def repo_activity(self):
         revisions = {}
-        with Pool(num_pools) as p:
+        with Pool(self.num_pools) as p:
             for result in p.imap_unordered(
                 partial(collectors.activity, self.repos_dir),
                 self.repos
@@ -102,7 +101,7 @@ class GitStats:
                 data = {}
                 revs_to_check = revs
 
-            with Pool(num_pools) as p:
+            with Pool(self.num_pools) as p:
                 for result in p.imap_unordered(
                     partial(collectors.num_files, self.repos_dir, repo),
                     revs_to_check
@@ -113,7 +112,7 @@ class GitStats:
             logger.info(f'{repo} files history updated')
 
     def repo_lines(self):
-        with Pool(num_pools) as p:
+        with Pool(self.num_pools) as p:
             for result in p.imap_unordered(
                 partial(collectors.count_lines, self.repos_dir),
                 self.repos
@@ -123,7 +122,7 @@ class GitStats:
 
     def repo_tags(self):
         repo_tags = {}
-        with Pool(num_pools) as p:
+        with Pool(self.num_pools) as p:
             for result in p.imap_unordered(
                 partial(collectors.get_tags, self.repos_dir),
                 self.repos
@@ -131,7 +130,7 @@ class GitStats:
                 repo_tags[result['repo']] = result['tags']
 
         for repo, tags in repo_tags.items():
-            with Pool(num_pools) as p:
+            with Pool(self.num_pools) as p:
                 for result in p.imap_unordered(
                     partial(collectors.get_timestamp, self.repos_dir, repo),
                     [t['revision'] for t in tags]
@@ -162,7 +161,7 @@ class GitStats:
 
     def repo_branches(self):
         repo_branches = {}
-        with Pool(num_pools) as p:
+        with Pool(self.num_pools) as p:
             for result in p.imap_unordered(
                 partial(collectors.get_branches, self.repos_dir),
                 self.repos
@@ -171,7 +170,7 @@ class GitStats:
 
         for repo, branches in repo_branches.items():
             branch_timestamps = []
-            with Pool(num_pools) as p:
+            with Pool(self.num_pools) as p:
                 for result in p.imap_unordered(
                     partial(collectors.get_timestamp, self.repos_dir, repo),
                     branches
@@ -203,7 +202,7 @@ class GitStats:
                 else:
                     files_to_blame[fname] = revision
 
-            with Pool(num_pools) as p:
+            with Pool(self.num_pools) as p:
                 for result in p.imap_unordered(
                     partial(collectors.get_blame, self.repos_dir, repo,
                             detect_move),
@@ -249,6 +248,18 @@ class GitStats:
         if not hasattr(self, '_data_dir'):
             self._prepare_workdir()
         return self._data_dir
+
+    @property
+    def num_pools(self):
+        if not hasattr(self, '_num_pools'):
+            try:
+                self._num_pools = int(self.config.config.getint(
+                    'GLOBAL', 'process_pools', fallback=os.cpu_count()
+                ))
+            except ValueError:
+                self._num_pools = os.cpu_count()
+
+        return self._num_pools
 
     def save_data(self, data, fname, folders=''):
         utils.save_json(data, self.data_dir, fname, folders)
