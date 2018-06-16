@@ -183,11 +183,13 @@ class GitStats:
             logger.info(f'{repo} branches updated')
 
     def repo_blame(self):
+        detect_moves = self.config.config.get(
+            'GLOBAL', 'detect_move', fallback=''
+        ).strip().split()
+
         for repo in self.repos:
             cache = self.load_data('files-authors.json', repo) or {}
-            detect_move = self.config.config.getboolean('GLOBAL',
-                                                        'detect_move',
-                                                        fallback=False)
+            detect_move = repo in detect_moves
 
             files_to_blame = {}
             authors = {}
