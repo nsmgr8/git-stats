@@ -335,3 +335,92 @@ def test_repo_tags(stat, mocker):
     collectors.get_tags = _tmp1
     collectors.get_timestamp = _tmp2
     utils.run_git = _tmp3
+
+
+def test_repo_blame(stat, mocker):
+    _tmp1 = collectors.get_blame
+    _tmp2 = utils.run_git
+
+    collectors.get_blame = mocker.Mock()
+    collectors.get_blame.side_effect = [
+        {'authors': {'author1': 10, 'author2': 20}, 'file': 'f1'},
+        {'authors': {}, 'file': 'f2'},
+    ]
+    utils.run_git = mocker.Mock()
+    utils.run_git.side_effect = [
+        '10644 blob rev1 f1',
+        '10644 blob rev2 f2',
+    ]
+
+    gs = stat['cls']
+
+    gs.repos = ['repo1', 'repo2']
+
+    gs.repo_blame()
+
+    assert gs.load_data('files-authors.json', 'repo1') == {
+        'f1': {
+            'authors': {'author1': 10, 'author2': 20},
+            'revision': 'rev1',
+        },
+    }
+    assert gs.load_data('files-authors.json', 'repo2') == {
+        'f2': {'authors': {}, 'revision': 'rev2'},
+    }
+
+    assert gs.load_data('authors.json', 'repo1') == {
+        'files': {'author1': 1, 'author2': 1},
+        'lines': {'author1': 10, 'author2': 20},
+    }
+    assert gs.load_data('authors.json', 'repo2') == {'files': {}, 'lines': {}}
+
+    collectors.get_tags = _tmp1
+    utils.run_git = _tmp2
+
+
+def test_repo_blame_with_cache(stat, mocker):
+    _tmp1 = collectors.get_blame
+    _tmp2 = utils.run_git
+
+    collectors.get_blame = mocker.Mock()
+    collectors.get_blame.side_effect = [
+        {'authors': {'author1': 10, 'author2': 20}, 'file': 'f1'},
+    ]
+    utils.run_git = mocker.Mock()
+    utils.run_git.side_effect = [
+        """10644 blob rev1 f1
+        '10644 blob rev2 f2"""
+    ]
+
+    cache = {
+        'f2': {
+            'authors': {'author1': 30, 'author3': 10},
+            'revision': 'rev2',
+        },
+    }
+
+    gs = stat['cls']
+    gs.save_data(cache, 'files-authors.json', 'repo1')
+
+    gs.repos = ['repo1']
+
+    gs.repo_blame()
+
+    assert gs.load_data('files-authors.json', 'repo1') == {
+        'f1': {
+            'authors': {'author1': 10, 'author2': 20},
+            'revision': 'rev1',
+        },
+        'f2': {
+            'authors': {'author1': 30, 'author3': 10},
+            'revision': 'rev2',
+        },
+    }
+
+    assert gs.load_data('authors.json', 'repo1') == {
+        'files': {'author1': 2, 'author2': 1, 'author3': 1},
+        'lines': {'author1': 40, 'author2': 20, 'author3': 10},
+    }
+
+    collectors.get_tags = _tmp1
+    utils.run_git = _tmp2
