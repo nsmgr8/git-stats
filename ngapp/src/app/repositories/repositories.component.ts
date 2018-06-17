@@ -9,7 +9,7 @@ import { RepositoriesService } from '../services/repositories.service';
 })
 export class RepositoriesComponent implements OnInit {
     subscription;
-    repos;
+    repos = [];
     has_video: any = {};
 
     constructor(
