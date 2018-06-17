@@ -186,3 +186,22 @@ def test_activity(stat, mocker):
     assert revs == {'repo1': ['r1', 'r2'], 'repo2': ['r3']}
 
     collectors.activity = _tmp
+
+
+def test_repo_lines(stat, mocker):
+    _tmp = collectors.count_lines
+
+    collectors.count_lines = mocker.Mock()
+    collectors.count_lines.side_effect = [
+        {'repo': 'repo1', 'data': 'data1'},
+        {'repo': 'repo2', 'data': 'data2'},
+    ]
+
+    gs = stat['cls']
+    gs.repos = ['repo1', 'repo2']
+    gs.repo_lines()
+
+    assert gs.load_data('lines.json', 'repo1') == 'data1'
+    assert gs.load_data('lines.json', 'repo2') == 'data2'
+
+    collectors.count_lines = _tmp
