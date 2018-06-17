@@ -95,3 +95,35 @@ def test_last_update(stat):
     end = int(datetime.utcnow().timestamp())
 
     assert start <= data['last_updated'] <= end
+
+
+def test_run(stat, mocker):
+    mocker.patch('subprocess.run')
+
+    start = int(datetime.utcnow().timestamp())
+
+    gs = stat['cls']
+
+    methods = [
+        'update_repos',
+        'repo_summary',
+        'repo_lines',
+        'repo_activity',
+        'repo_files_history',
+        'repo_tags',
+        'repo_branches',
+        'repo_blame',
+    ]
+    for m in methods:
+        mocker.spy(gs, m)
+
+    gs.run()
+
+    for m in methods:
+        assert getattr(gs, 'update_repos').call_count == 1
+
+    data = gs.load_data('last_update.json')
+
+    end = int(datetime.utcnow().timestamp())
+
+    assert start <= data['last_updated'] <= end
