@@ -40,7 +40,7 @@ def update_repo(workdir, repo):
             'author': author,
         }
     except Exception as e:
-        logger.error(e)
+        logger.exception(f'update error for repo "{repo}"')
         return {}
 
 
