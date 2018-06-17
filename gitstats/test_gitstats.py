@@ -6,7 +6,7 @@ from tempfile import NamedTemporaryFile as tf, TemporaryDirectory as td
 
 import pytest
 
-from . import gitstats, config, collectors
+from . import gitstats, config, collectors, utils
 
 gitstats.Pool = Pool
 
@@ -282,3 +282,56 @@ def test_repo_file_history_cache(stat, mocker):
     assert gs.load_data(fname, 'repo2') == {'data': 'data'}
 
     collectors.num_files = _tmp
+
+
+def test_repo_tags(stat, mocker):
+    _tmp1 = collectors.get_tags
+    _tmp2 = collectors.get_timestamp
+    _tmp3 = utils.run_git
+
+    collectors.get_tags = mocker.Mock()
+    collectors.get_tags.side_effect = [
+        {'repo': 'repo1', 'tags': []},
+        {'repo': 'repo2', 'tags': [{'revision': 't1'}, {'revision': 't2'}]}
+    ]
+    collectors.get_timestamp = mocker.Mock()
+    collectors.get_timestamp.side_effect = [
+        {'revision': 't1', 'timestamp': 123456},
+        {'revision': 't2', 'timestamp': 234567},
+    ]
+    utils.run_git = mocker.Mock()
+    utils.run_git.side_effect = [
+        '15\tauthor1\n20\tauthor3',
+        '5\tauthor1\n10\tauthor2',
+    ]
+
+    fname = 'tags.json'
+    gs = stat['cls']
+
+    gs.repos = ['repo1', 'repo2']
+
+    gs.repo_tags()
+
+    assert gs.load_data(fname, 'repo1') == []
+    assert gs.load_data(fname, 'repo2') == [
+        {
+            'authors': [
+                {'author': 'author1', 'commits': 15},
+                {'author': 'author3', 'commits': 20},
+            ],
+            'revision': 't2',
+            'timestamp': 234567,
+        },
+        {
+            'authors': [
+                {'author': 'author1', 'commits': 5},
+                {'author': 'author2', 'commits': 10},
+            ],
+            'revision': 't1',
+            'timestamp': 123456,
+        },
+    ]
+
+    collectors.get_tags = _tmp1
+    collectors.get_timestamp = _tmp2
+    utils.run_git = _tmp3
