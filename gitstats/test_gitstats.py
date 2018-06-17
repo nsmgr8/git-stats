@@ -205,3 +205,29 @@ def test_repo_lines(stat, mocker):
     assert gs.load_data('lines.json', 'repo2') == 'data2'
 
     collectors.count_lines = _tmp
+
+
+def test_repo_branches(stat, mocker):
+    _tmp1 = collectors.get_branches
+    _tmp2 = collectors.get_timestamp
+
+    collectors.get_branches = mocker.Mock()
+    collectors.get_branches.side_effect = [
+        {'repo': 'repo1', 'data': 'data1', 'branches': []},
+        {'repo': 'repo2', 'data': 'data2', 'branches': ['b1']},
+    ]
+
+    collectors.get_timestamp = mocker.Mock()
+    collectors.get_timestamp.side_effect = [
+        {'timestamp': 123456},
+    ]
+
+    gs = stat['cls']
+    gs.repos = ['repo1', 'repo2']
+    gs.repo_branches()
+
+    assert gs.load_data('branches.json', 'repo1') == []
+    assert gs.load_data('branches.json', 'repo2') == [{'timestamp': 123456}]
+
+    collectors.get_branches = _tmp1
+    collectors.get_timestamp = _tmp2
