@@ -1,11 +1,14 @@
 import json
 import os
 from datetime import datetime
+from multiprocessing.dummy import Pool
 from tempfile import NamedTemporaryFile as tf, TemporaryDirectory as td
 
 import pytest
 
-from . import gitstats, config
+from . import gitstats, config, collectors
+
+gitstats.Pool = Pool
 
 
 @pytest.fixture()
@@ -21,7 +24,7 @@ def stat():
         """.encode())
         f.flush()
 
-        cfg = config.Config(config_path=f.name)
+        cfg = config.Config(config_path=f.name, force=True)
         cfg.config
 
         yield {
@@ -127,3 +130,20 @@ def test_run(stat, mocker):
     end = int(datetime.utcnow().timestamp())
 
     assert start <= data['last_updated'] <= end
+
+
+def test_update_repos(stat, mocker):
+    _tmp = collectors.update_repo
+
+    collectors.update_repo = mocker.Mock()
+    collectors.update_repo.side_effect = [
+        {'name': 'repo1', 'HEAD': 'repo1'},
+        {'name': 'repo2', 'HEAD': 'repo2'},
+    ]
+
+    gs = stat['cls']
+    gs.update_repos()
+
+    assert gs.repos == ['repo1', 'repo2']
+
+    collectors.update_repo = _tmp
