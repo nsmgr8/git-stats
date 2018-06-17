@@ -147,3 +147,42 @@ def test_update_repos(stat, mocker):
     assert gs.repos == ['repo1', 'repo2']
 
     collectors.update_repo = _tmp
+
+
+def test_summary(stat, mocker):
+    _tmp = collectors.summary
+
+    collectors.summary = mocker.Mock()
+    collectors.summary.side_effect = [
+        {'repo': 'repo1', 'data': 'data1'},
+        {'repo': 'repo2', 'data': 'data2'},
+    ]
+
+    gs = stat['cls']
+    gs.repos = ['repo1', 'repo2']
+    gs.repo_summary()
+
+    assert gs.load_data('summary.json', 'repo1') == 'data1'
+    assert gs.load_data('summary.json', 'repo2') == 'data2'
+
+    collectors.summary = _tmp
+
+
+def test_activity(stat, mocker):
+    _tmp = collectors.activity
+
+    collectors.activity = mocker.Mock()
+    collectors.activity.side_effect = [
+        {'repo': 'repo1', 'data': 'data1', 'revisions': ['r1', 'r2']},
+        {'repo': 'repo2', 'data': 'data2', 'revisions': ['r3']},
+    ]
+
+    gs = stat['cls']
+    gs.repos = ['repo1', 'repo2']
+    revs = gs.repo_activity()
+
+    assert gs.load_data('activity.json', 'repo1') == 'data1'
+    assert gs.load_data('activity.json', 'repo2') == 'data2'
+    assert revs == {'repo1': ['r1', 'r2'], 'repo2': ['r3']}
+
+    collectors.activity = _tmp
