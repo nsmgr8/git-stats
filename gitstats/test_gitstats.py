@@ -231,3 +231,54 @@ def test_repo_branches(stat, mocker):
 
     collectors.get_branches = _tmp1
     collectors.get_timestamp = _tmp2
+
+
+def test_repo_file_history(stat, mocker):
+    _tmp = collectors.num_files
+
+    collectors.num_files = mocker.Mock()
+    collectors.num_files.side_effect = [
+        {'data': 'data1'},
+        {'data': 'data2'},
+    ]
+
+    revs = {
+        'repo1': {'revision': 'r1'},
+        'repo2': {'revision': 'r2'},
+    }
+
+    gs = stat['cls']
+    gs.repos = ['repo1', 'repo2']
+    gs.repo_files_history(revs)
+
+    assert gs.load_data('files-history.json', 'repo1') == {'data': 'data1'}
+    assert gs.load_data('files-history.json', 'repo2') == {'data': 'data2'}
+
+    collectors.num_files = _tmp
+
+
+def test_repo_file_history_cache(stat, mocker):
+    _tmp = collectors.num_files
+
+    collectors.num_files = mocker.Mock()
+    collectors.num_files.side_effect = [
+        {'data': 'data'},
+    ]
+
+    revs = {
+        'repo1': [{'revision': 'r1'}],
+        'repo2': [{'revision': 'r2'}],
+    }
+
+    fname = 'files-history.json'
+    gs = stat['cls']
+
+    gs.repos = ['repo1', 'repo2']
+    gs.save_data({'r1': 'old_data'}, fname, 'repo1')
+
+    gs.repo_files_history(revs)
+
+    assert gs.load_data(fname, 'repo1') == {'r1': 'old_data'}
+    assert gs.load_data(fname, 'repo2') == {'data': 'data'}
+
+    collectors.num_files = _tmp
