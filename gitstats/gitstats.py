@@ -252,12 +252,9 @@ class GitStats:
     @property
     def num_pools(self):
         if not hasattr(self, '_num_pools'):
-            try:
-                self._num_pools = int(self.config.config.getint(
-                    'GLOBAL', 'process_pools', fallback=os.cpu_count()
-                ))
-            except ValueError:
-                self._num_pools = os.cpu_count()
+            self._num_pools = int(self.config.config.getint(
+                'GLOBAL', 'process_pools', fallback=os.cpu_count()
+            ))
 
         return self._num_pools
 
