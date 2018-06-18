@@ -3,11 +3,31 @@
         <table class="table table-bordered table-striped table-sm mt-2">
             <thead>
                 <tr class="table-warning">
-                    <th>Repository</th>
-                    <th>Last Author</th>
+                    <th (click)="orderBy('name')">
+                        <app-order-toggle [show]="order.field === 'name'"
+                            [direction]="order.direction">
+                            Repository
+                        </app-order-toggle>
+                    </th>
+                    <th (click)="orderBy('author')">
+                        <app-order-toggle [show]="order.field === 'author'"
+                            [direction]="order.direction">
+                            Last Author
+                        </app-order-toggle>
+                    </th>
                     <th>Last Commit</th>
-                    <th class="text-right">Last Commit Date</th>
-                    <th class="text-right">First Commit Date</th>
+                    <th class="text-right" (click)="orderBy('timestamp')">
+                        <app-order-toggle [show]="order.field === 'timestamp'"
+                            [direction]="order.direction">
+                            Last Commit Date
+                        </app-order-toggle>
+                    </th>
+                    <th class="text-right" (click)="orderBy('first')">
+                        <app-order-toggle [show]="order.field === 'first'"
+                            [direction]="order.direction">
+                            First Commit Date
+                        </app-order-toggle>
+                    </th>
                 </tr>
             </thead>
 

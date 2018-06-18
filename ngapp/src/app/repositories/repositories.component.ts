@@ -12,6 +12,11 @@ export class RepositoriesComponent implements OnInit {
     repos = [];
     has_video: any = {};
 
+    order = {
+        field: 'timestamp',
+        direction: 1
+    };
+
     constructor(
         public repoService: RepositoriesService
     ) {
@@ -48,5 +53,24 @@ export class RepositoriesComponent implements OnInit {
         if (response.status === 200) {
             this.has_video = {...this.has_video, [repo]: true};
         }
+    }
+
+    orderBy(field) {
+        if (field === this.order.field) {
+            this.order = {field, direction: (-1) * this.order.direction};
+        } else {
+            this.order = {field, direction: 1};
+        }
+
+        this.repos = this.repos.sort((a, b) => {
+            if (field === 'name' || field === 'author') {
+                if (this.order.direction === 1) {
+                    return b[field].localeCompare(a[field]);
+                } else {
+                    return a[field].localeCompare(b[field]);
+                }
+            }
+            return this.order.direction * (b[field] - a[field]);
+        });
     }
 }
