@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+
+import { timer } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 import { RepositoriesService } from '../services/repositories.service';
 
@@ -7,10 +10,11 @@ import { RepositoriesService } from '../services/repositories.service';
     templateUrl: './repositories.component.html',
     styleUrls: ['./repositories.component.styl']
 })
-export class RepositoriesComponent implements OnInit {
-    subscription;
+export class RepositoriesComponent implements OnInit, OnDestroy {
+    subscriptions = new Set<any>();
     repos = [];
     has_video: any = {};
+    video_requested = false;
 
     order = {
         field: 'timestamp',
@@ -23,10 +27,16 @@ export class RepositoriesComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.subscription = this.repoService.getRepositories()
-            .subscribe(
-                data => this.setRepositories(data)
-            );
+        this.video_requested = false;
+        this.subscriptions.add(
+            timer(100, 5 * 60 * 1000).pipe(
+                switchMap(() => this.repoService.getRepositories())
+            ).subscribe(data => this.setRepositories(data))
+        );
+    }
+
+    ngOnDestroy() {
+        this.subscriptions.forEach(x => x.unsubscribe());
     }
 
     setRepositories(data) {
@@ -40,13 +50,17 @@ export class RepositoriesComponent implements OnInit {
             return +b.date - +a.date;
         });
 
-        this.repos.forEach(repo => {
-            this.repoService.hasVideo(repo.name)
-                .subscribe(
-                    response => this.setVideoResponse(repo.name, response),
-                    () => {}
-                );
-        });
+        if (!this.video_requested) {
+            this.video_requested = true;
+
+            this.repos.forEach(repo => {
+                this.repoService.hasVideo(repo.name)
+                    .subscribe(
+                        response => this.setVideoResponse(repo.name, response),
+                        () => {}
+                    );
+            });
+        }
     }
 
     setVideoResponse(repo, response) {
