@@ -19,8 +19,6 @@ def update_repo(workdir, repo):
     :param repo: a tuple (repo_name, repo_origin_path)
     :return: a dict {repo_name: current_head_info}
     """
-    logger.debug(f'Current repository: {repo[0]} {repo[1]}')
-
     try:
         clone(workdir, *repo)
         utils.run_git(workdir, repo[0], 'pull --tags')
@@ -39,7 +37,7 @@ def update_repo(workdir, repo):
             'start_date': int(first_commit),
             'author': author,
         }
-    except Exception as e:
+    except Exception:
         logger.exception(f'update error for repo "{repo}"')
         return {}
 
