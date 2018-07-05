@@ -81,9 +81,22 @@ class GitStats:
                 partial(collectors.activity, self.repos_dir),
                 self.repos
             ):
-                revisions[result['repo']] = result['revisions']
-                self.save_data(result['data'], 'activity.json', result['repo'])
-                logger.info(f'{result["repo"]} activity updated')
+                repo = result['repo']
+                revisions[repo] = result['revisions']
+                self.save_data(result['data'], 'activity.json', repo)
+                logger.info(f'{repo} activity updated')
+
+                # check number of authors
+                authors = len(result['data']['by_authors'])
+                summary = self.load_data('summary.json', repo)
+                need_update = False
+                for row in summary:
+                    if row['key'] == 'authors' and row['value'] != authors:
+                        row['value'] = authors
+                        need_update = True
+                if need_update:
+                    self.save_data(summary, 'summary.json', repo)
+                    logger.info(f'summary updated for {repo}')
 
         return revisions
 
