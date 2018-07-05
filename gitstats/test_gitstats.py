@@ -171,18 +171,25 @@ def test_summary(stat, mocker):
 def test_activity(stat, mocker):
     _tmp = collectors.activity
 
+    data1 = {'by_authors': {'nasim': {}}}
+    data2 = {'by_authors': {'someone': {}}}
     collectors.activity = mocker.Mock()
     collectors.activity.side_effect = [
-        {'repo': 'repo1', 'data': 'data1', 'revisions': ['r1', 'r2']},
-        {'repo': 'repo2', 'data': 'data2', 'revisions': ['r3']},
+        {'repo': 'repo1', 'data': data1, 'revisions': ['r1', 'r2']},
+        {'repo': 'repo2', 'data': data2, 'revisions': ['r3']},
     ]
 
     gs = stat['cls']
     gs.repos = ['repo1', 'repo2']
+    gs.save_data([{'key': 'authors', 'value': 0}], 'summary.json', 'repo1')
+    gs.save_data([], 'summary.json', 'repo2')
     revs = gs.repo_activity()
 
-    assert gs.load_data('activity.json', 'repo1') == 'data1'
-    assert gs.load_data('activity.json', 'repo2') == 'data2'
+    assert gs.load_data('activity.json', 'repo1') == data1
+    assert gs.load_data('activity.json', 'repo2') == data2
+    assert gs.load_data('summary.json', 'repo1') == [{'key': 'authors',
+                                                      'value': 1}]
+    assert gs.load_data('summary.json', 'repo2') == []
     assert revs == {'repo1': ['r1', 'r2'], 'repo2': ['r3']}
 
     collectors.activity = _tmp
