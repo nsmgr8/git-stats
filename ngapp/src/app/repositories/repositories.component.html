@@ -35,7 +35,7 @@
 
             <tbody>
                 <tr *ngFor="let repo of repos">
-                    <th>
+                    <th class="text-nowrap">
                         <span *ngIf="has_video[repo.name]">
                             &#9654;
                         </span>
@@ -43,16 +43,16 @@
                             {{ repo.name }}
                         </a>
                     </th>
-                    <th>
-                        <a *ngIf="repo.web" [href]="repo.web" target="_blank"
+                    <th class="text-truncate repo-link">
+                        <a *ngIf="repo.web" [href]="repo.codesite" target="_blank"
                             rel="noopener">
-                            {{ repo.name }}
+                            {{ repo.web }}
                         </a>
                     </th>
-                    <th>
-                        <a *ngIf="repo.site" [href]="repo.site" target="_blank"
+                    <th class="text-truncate repo-link">
+                        <a *ngIf="repo.site" [href]="repo.website" target="_blank"
                             rel="noopener">
-                            {{ repo.name }}
+                            {{ repo.site }}
                         </a>
                     </th>
                     <td class="small text-muted">

@@ -45,8 +45,8 @@ export class RepositoriesComponent implements OnInit, OnDestroy {
         this.repos = data.map(x => {
             return {
                 ...x,
-                web: this.sanitizer.bypassSecurityTrustUrl(x.web),
-                site: this.sanitizer.bypassSecurityTrustUrl(x.site),
+                codesite: this.sanitizer.bypassSecurityTrustUrl(x.web),
+                website: this.sanitizer.bypassSecurityTrustUrl(x.site),
                 timestamp: x.date * 1000,
                 first: x.start_date * 1000
             };
