@@ -39,14 +39,15 @@ class GitStats:
     def update_repos(self):
         prev_states = self.load_data('repos.json') or []
         repo_states = []
-        repos = list(self.config.REPOSITORIES.items())
+        repos = self.config.repositories()
 
         with Pool(self.num_pools) as p:
             for result in p.imap_unordered(
                 partial(collectors.update_repo, self.repos_dir),
-                repos
+                [(k, v['clone']) for k, v in repos.items()]
             ):
                 if result:
+                    result.update(repos[result['name']])
                     logger.info(f'{result["name"]} updated')
                     repo_states.append(result)
 

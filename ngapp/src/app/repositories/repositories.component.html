@@ -9,6 +9,8 @@
                             Repository
                         </app-order-toggle>
                     </th>
+                    <th>Code</th>
+                    <th>Website</th>
                     <th (click)="orderBy('author')">
                         <app-order-toggle [show]="order.field === 'author'"
                             [direction]="order.direction">
@@ -41,6 +43,18 @@
                             {{ repo.name }}
                         </a>
                     </th>
+                    <th>
+                        <a *ngIf="repo.web" [href]="repo.web" target="_blank"
+                            rel="noopener">
+                            {{ repo.name }}
+                        </a>
+                    </th>
+                    <th>
+                        <a *ngIf="repo.site" [href]="repo.site" target="_blank"
+                            rel="noopener">
+                            {{ repo.name }}
+                        </a>
+                    </th>
                     <td class="small text-muted">
                         {{ repo.author }}
                     </td>
@@ -56,13 +70,9 @@
                 </tr>
             </tbody>
 
-            <tfoot>
-                <tr class="table-info">
-                    <th colspan="5">
-                        Total repositories: {{ repos.length }}
-                    </th>
-                </tr>
-            </tfoot>
+            <caption class="table-info text-center py-1">
+                Total repositories: {{ repos.length }}
+            </caption>
         </table>
     </div>
 </div>

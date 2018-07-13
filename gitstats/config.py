@@ -36,3 +36,18 @@ class Config:
         Convenient object dot accessor to config section
         """
         return self.config[name]
+
+    def repositories(self):
+        """
+        Parse the repositories config
+        """
+        repos = {}
+        for repo_id, conf in self.REPOSITORIES.items():
+            repo = {}
+            for line in conf.strip().splitlines():
+                key, _, value = line.strip().partition(':')
+                if key and value:
+                    repo[key] = value
+            if 'clone' in repo:
+                repos[repo_id] = repo
+        return repos

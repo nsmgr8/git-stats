@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 
 import { timer } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -22,7 +23,8 @@ export class RepositoriesComponent implements OnInit, OnDestroy {
     };
 
     constructor(
-        public repoService: RepositoriesService
+        public repoService: RepositoriesService,
+        public sanitizer: DomSanitizer
     ) {
     }
 
@@ -43,6 +45,8 @@ export class RepositoriesComponent implements OnInit, OnDestroy {
         this.repos = data.map(x => {
             return {
                 ...x,
+                web: this.sanitizer.bypassSecurityTrustUrl(x.web),
+                site: this.sanitizer.bypassSecurityTrustUrl(x.site),
                 timestamp: x.date * 1000,
                 first: x.start_date * 1000
             };
