@@ -1,6 +1,10 @@
 [GLOBAL]
-workdir = /tmp/workdir
+workdir = /var/www/git-stats/workdir
+detect_move = git-stats
+process_pools = 2
 
 [REPOSITORIES]
-example1 = https://example1.com/example1.git
-example2 = https://example2.com/example2.git
+git-stats =
+    clone: https://github.com/nsmgr8/git-stats.git
+    web: https://github.com/nsmgr8/git-stats
+    site: https://nsmgr8.github.io/git-stats-demo/
