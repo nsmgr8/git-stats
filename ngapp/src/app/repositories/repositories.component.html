@@ -45,13 +45,13 @@
                     </th>
                     <th class="text-truncate repo-link">
                         <a *ngIf="repo.web" [href]="repo.codesite" target="_blank"
-                            rel="noopener">
+                            rel="noopener" class="text-info small">
                             {{ repo.web }}
                         </a>
                     </th>
                     <th class="text-truncate repo-link">
                         <a *ngIf="repo.site" [href]="repo.website" target="_blank"
-                            rel="noopener">
+                            rel="noopener" class="text-success small">
                             {{ repo.site }}
                         </a>
                     </th>
