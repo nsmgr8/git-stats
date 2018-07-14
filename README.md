@@ -4,12 +4,18 @@ Here we have a source code statistics generator and web viewer. A list of
 project maintained in git VCS can be looked into to generate some statistics.
 These statistics can then be viewed on browser when deployed in a webserver.
 
+# Demo
+
+A demo is available at https://nsmgr8.github.io/git-stats-demo/#/.
+
 # Requirements
 
 0. Linux or MacOS
 1. Python 3.6+ (https://www.python.org/)
 2. NodeJS 8+ (https://nodejs.org/en/)
 3. Yarn 1.6+ (https://yarnpkg.com/lang/en/)
+4. git (https://git-scm.com)
+5. cloc (https://github.com/AlDanial/cloc)
 
 Use your preferred installation method to install the above requirements.
 
@@ -17,8 +23,8 @@ Use your preferred installation method to install the above requirements.
 
 Clone this repository to your machine, say in `/var/www/git-stats`.
 
-    $ git clone https://github.com/nsmgr8/git-stats.git
-    $ cd git-stats/ngapp
+    $ git clone https://github.com/nsmgr8/git-stats.git /var/www/git-stats
+    $ cd /var/www/git-stats/ngapp
     $ yarn build
 
 ## Configuration
@@ -101,3 +107,30 @@ Serve webpage build at / and json files root at /data/. That is,
     }
 
 An example nginx config is provided in `gitstats.nginx.conf` file.
+
+# Development
+
+During development one can run the python test suite. To run the tests do the
+following:
+
+    $ cd path/to/git-stats
+    $ python3 -m venv .venv
+    $ source .venv/bin/activate
+    $ python -m pip install -r requirements-dev.txt
+    $ pytest --cov=gitstats -v gitstats/
+
+To develop the web app do the following:
+
+    $ cd path/to/git-stats/ngapp
+    $ yarn start -o
+
+This will build a dev version of the web application and open the page in
+default web browser at http://localhost:4200/. This is an
+[angular](https://angular.io) application.
+
+For feeding the data to the app you need to serve the workdir (configured in
+config.ini) folder at port 8000. Which can be done as:
+
+    $ cd path/to/git-stats/workdir
+    $ python3 -m http.server
+
