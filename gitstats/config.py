@@ -45,9 +45,9 @@ class Config:
         for repo_id, conf in self.REPOSITORIES.items():
             repo = {}
             for line in conf.strip().splitlines():
-                key, _, value = line.strip().partition(':')
-                if key and value:
-                    repo[key] = value
+                key, _, val = [x.strip() for x in line.strip().partition(':')]
+                if key and val:
+                    repo[key] = val
             if 'clone' in repo:
                 repos[repo_id] = repo
         return repos

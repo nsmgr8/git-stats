@@ -23,3 +23,23 @@ def test_conf_accessor():
         fh.flush()
         conf = config.Config(config_path=fh.name)
         assert dict(conf.section) == {'key': 'value'}
+
+
+def test_repositories():
+    with tempfile.NamedTemporaryFile() as fh:
+        fh.write(b"""
+        [REPOSITORIES]
+        example =
+            clone: ssh://example.com/clone
+            web: http://example.com/code
+            site: http://example.com/
+        """)
+        fh.flush()
+        conf = config.Config(config_path=fh.name)
+        assert conf.repositories() == {
+            'example': {
+                'clone': 'ssh://example.com/clone',
+                'web': 'http://example.com/code',
+                'site': 'http://example.com/',
+            },
+        }
