@@ -25,6 +25,7 @@ Clone this repository to your machine, say in `/var/www/git-stats`.
 
     $ git clone https://github.com/nsmgr8/git-stats.git /var/www/git-stats
     $ cd /var/www/git-stats/ngapp
+    $ yarn
     $ yarn build
 
 ## Configuration
