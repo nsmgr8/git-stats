@@ -19,8 +19,8 @@ def stat():
         workdir = {d}
 
         [REPOSITORIES]
-        repo1 = https://a-git.repo/repo1
-        repo2 = https://a-git.repo/repo2
+        repo1 = clone: https://a-git.repo/repo1
+        repo2 = clone: https://a-git.repo/repo2
         """.encode())
         f.flush()
 
