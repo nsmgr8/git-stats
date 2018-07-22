@@ -1,7 +1,7 @@
 <div class="container-fluid mt-2">
     <div class="card">
         <div class="card-header bg-info text-white py-1">
-            Repository: <strong>{{ repo }}</strong>
+            Repository: <strong>{{ repo.name }}</strong>
         </div>
 
         <div class="card-body table-info p-2">
@@ -9,7 +9,7 @@
                 <div class="col mb-2" *ngFor="let row of summary">
 
                     <a class="summary-card"
-                       [routerLink]="['/repo', repo, row.key]"
+                       [routerLink]="['/repo', repo.name, row.key]"
                        routerLinkActive="active"
                        #rla="routerLinkActive"
                        [ngbTooltip]="row.notes | titlecase">
@@ -42,4 +42,33 @@
     </div>
 
     <router-outlet></router-outlet>
+
+    <div class="card mt-2">
+        <table class="table table-sm mb-0">
+            <tbody>
+                <tr>
+                    <th class="text-right">Clone</th>
+                    <td>
+                        {{ repo.clone }}
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-right">Browse Code</th>
+                    <td>
+                        <a [href]="repo.codesite" rel="noopener" target="_blank">
+                            {{ repo.web }}
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-right">Website</th>
+                    <td>
+                        <a [href]="repo.website" rel="noopener" target="_blank">
+                            {{ repo.site }}
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
