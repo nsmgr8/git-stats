@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { timer } from 'rxjs';
@@ -16,6 +16,9 @@ export class RepositoriesComponent implements OnInit, OnDestroy {
     repos = [];
     has_video: any = {};
     video_requested = false;
+    reload_request = false;
+
+    @ViewChild('reloaded') reloaded;
 
     order = {
         field: 'timestamp',
@@ -42,6 +45,8 @@ export class RepositoriesComponent implements OnInit, OnDestroy {
     }
 
     setRepositories(data) {
+        this.processReloadRequest();
+
         this.repos = data.map(x => {
             return {
                 ...x,
@@ -90,5 +95,24 @@ export class RepositoriesComponent implements OnInit, OnDestroy {
             }
             return this.order.direction * (b[field] - a[field]);
         });
+    }
+
+    refresh() {
+        this.reload_request = true;
+        this.repoService.getRepositories().subscribe(
+            data => this.setRepositories(data)
+        );
+    }
+
+    processReloadRequest() {
+        if (!this.reload_request) {
+            return;
+        }
+        this.reload_request = false;
+
+        this.reloaded.nativeElement.classList.remove('d-none');
+        setTimeout(() => {
+            this.reloaded.nativeElement.classList.add('d-none');
+        }, 3000);
     }
 }
