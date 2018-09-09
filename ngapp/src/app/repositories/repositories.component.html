@@ -9,8 +9,7 @@
                             Repository
                         </app-order-toggle>
                     </th>
-                    <th>Code</th>
-                    <th>Website</th>
+                    <th>Sites</th>
                     <th (click)="orderBy('author')">
                         <app-order-toggle [show]="order.field === 'author'"
                             [direction]="order.direction">
@@ -43,17 +42,19 @@
                             {{ repo.name }}
                         </a>
                     </th>
-                    <th class="text-truncate repo-link">
-                        <a *ngIf="repo.web" [href]="repo.codesite" target="_blank"
-                            rel="noopener" class="text-info small">
-                            {{ repo.web }}
-                        </a>
-                    </th>
-                    <th class="text-truncate repo-link">
-                        <a *ngIf="repo.site" [href]="repo.website" target="_blank"
-                            rel="noopener" class="text-success small">
-                            {{ repo.site }}
-                        </a>
+                    <th>
+                        <div class="text-truncate repo-link">
+                            <a *ngIf="repo.web" [href]="repo.codesite" target="_blank"
+                                rel="noopener" class="text-info small">
+                                {{ repo.web }}
+                            </a>
+                        </div>
+                        <div class="text-truncate repo-link">
+                            <a *ngIf="repo.site" [href]="repo.website" target="_blank"
+                                rel="noopener" class="text-success small">
+                                {{ repo.site }}
+                            </a>
+                        </div>
                     </th>
                     <td class="small text-muted">
                         {{ repo.author }}
