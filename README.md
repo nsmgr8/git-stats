@@ -13,7 +13,6 @@ A demo is available at https://nsmgr8.github.io/git-stats-demo/#/.
 0. Linux or MacOS
 1. Python 3.6+ (https://www.python.org/)
 2. NodeJS 8+ (https://nodejs.org/en/)
-3. Yarn 1.6+ (https://yarnpkg.com/lang/en/)
 4. git (https://git-scm.com)
 5. cloc (https://github.com/AlDanial/cloc)
 
@@ -25,8 +24,8 @@ Clone this repository to your machine, say in `/var/www/git-stats`.
 
     $ git clone https://github.com/nsmgr8/git-stats.git /var/www/git-stats
     $ cd /var/www/git-stats/ngapp
-    $ yarn
-    $ yarn build
+    $ npm install
+    $ npm run build
 
 ## Configuration
 
@@ -93,7 +92,7 @@ stats.
 # Webserver Example (nginx)
 
 Once the generation of JSON statistics files (`python3 -m gitstats`) and
-webpage build (`yarn build`) are done. One can configure nginx to serve the
+webpage build (`npm run build`) are done. One can configure nginx to serve the
 statistics viewer via nginx as follows.
 
 Serve webpage build at / and json files root at /data/. That is,
@@ -123,7 +122,7 @@ following:
 To develop the web app do the following:
 
     $ cd path/to/git-stats/ngapp
-    $ yarn start -o
+    $ npm start
 
 This will build a dev version of the web application and open the page in
 default web browser at http://localhost:4200/. This is an

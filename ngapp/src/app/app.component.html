@@ -1,38 +1,40 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
-    <a class="navbar-brand py-0" [routerLink]="['/']">
-        <img src="/assets/icons/favicon-32x32.png" alt="logo">
-        Source Code Statistics <sup class="small">*</sup>
-    </a>
+  <a class="navbar-brand py-0" [routerLink]="['/']">
+    <img src="/icons/favicon-32x32.png" alt="logo" />
+    Source Code Statistics <sup class="small">*</sup>
+  </a>
 
-    <a class="btn btn-outline-light btn-sm ml-auto d-none d-sm-block"
-        [routerLink]="['/']">
-        Repositories
-    </a>
+  <a
+    class="btn btn-outline-light btn-sm ml-auto d-none d-sm-block"
+    [routerLink]="['/']"
+  >
+    Repositories
+  </a>
 </nav>
 
 <main>
-    <router-outlet></router-outlet>
+  <router-outlet></router-outlet>
 </main>
 
 <footer class="container-fluid">
-    <hr>
-    <div class="text-center">
-        Last updated on
-        <strong class="text-info">
-            {{ last_updated | date }}
-        </strong>
+  <hr />
+  <div class="text-center">
+    Last updated on
+    <strong class="text-info">
+      {{ last_updated | date }}
+    </strong>
+  </div>
+  <hr />
+  <div class="d-flex justify-content-between mb-5">
+    <div class="small">
+      <sup class="small">*</sup>
+      For source code managed by
+      <a href="https://git-scm.com/">git</a>.
     </div>
-    <hr>
-    <div class="d-flex justify-content-between mb-5">
-        <div class="small">
-            <sup class="small">*</sup>
-            For source code managed by
-            <a href="https://git-scm.com/">git</a>.
-        </div>
 
-        <div class="small">
-            Brought to you by
-            <a href="https://github.com/nsmgr8/git-stats/">git-stats</a>.
-        </div>
+    <div class="small">
+      Brought to you by
+      <a href="https://github.com/nsmgr8/git-stats/">git-stats</a>.
     </div>
+  </div>
 </footer>

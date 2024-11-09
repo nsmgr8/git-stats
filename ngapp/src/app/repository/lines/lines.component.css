@@ -1,0 +1,6 @@
+th {
+  cursor: pointer;
+  &:hover {
+    color: #999;
+  }
+}

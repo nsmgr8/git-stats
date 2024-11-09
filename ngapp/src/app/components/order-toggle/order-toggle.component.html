@@ -1,10 +1,12 @@
-<span *ngIf="show">
-    <span *ngIf="direction === -1">
-        &#x25B2;
-    </span>
-    <span *ngIf="direction === 1">
-        &#x25BC;
-    </span>
-</span>
+@if (show) {
+  <span>
+    @if (direction === -1) {
+      <span> &#x25B2; </span>
+    }
+    @if (direction === 1) {
+      <span> &#x25BC; </span>
+    }
+  </span>
+}
 
 <ng-content></ng-content>

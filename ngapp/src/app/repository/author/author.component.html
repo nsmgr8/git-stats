@@ -1,91 +1,103 @@
 <div class="card mt-2">
-    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-        <div>
-            Activity ({{ active_days }} active days)
-        </div>
-        <div class="btn-group btn-group-sm btn-group-toggle" role="group">
-            <button class="btn btn-sm btn-light"
-                    type="button"
-                    [ngClass]="{'active': chart_type === 'commits'}"
-                    (click)="setHeatmap('commits')">
-                Commits
-            </button>
-            <button class="btn btn-sm btn-light"
-                    type="button"
-                    [ngClass]="{'active': chart_type === 'insertions'}"
-                    (click)="setHeatmap('insertions')">
-                Lines Added
-            </button>
-            <button class="btn btn-sm btn-light"
-                    type="button"
-                    [ngClass]="{'active': chart_type === 'deletions'}"
-                    (click)="setHeatmap('deletions')">
-                Lines Removed
-            </button>
-        </div>
+  <div
+    class="card-header bg-secondary text-white d-flex justify-content-between align-items-center"
+  >
+    <div>Activity ({{ active_days }} active days)</div>
+    <div class="btn-group btn-group-sm btn-group-toggle" role="group">
+      <button
+        class="btn btn-sm btn-light"
+        type="button"
+        [ngClass]="{ active: chart_type === 'commits' }"
+        (click)="setHeatmap('commits')"
+      >
+        Commits
+      </button>
+      <button
+        class="btn btn-sm btn-light"
+        type="button"
+        [ngClass]="{ active: chart_type === 'insertions' }"
+        (click)="setHeatmap('insertions')"
+      >
+        Lines Added
+      </button>
+      <button
+        class="btn btn-sm btn-light"
+        type="button"
+        [ngClass]="{ active: chart_type === 'deletions' }"
+        (click)="setHeatmap('deletions')"
+      >
+        Lines Removed
+      </button>
     </div>
+  </div>
 
-    <div class="table-responsive">
-        <table class="small table table-sm table-bordered table-striped mb-0">
-            <thead>
-                <tr>
-                    <th>Hour</th>
-                    <th *ngFor="let i of hours">
-                        {{ i | number:'2.0' }}:00
-                    </th>
-                </tr>
-            </thead>
+  <div class="table-responsive">
+    <table class="small table table-sm table-bordered table-striped mb-0">
+      <thead>
+        <tr>
+          <th>Hour</th>
+          <th *ngFor="let i of hours">{{ i | number: "2.0" }}:00</th>
+        </tr>
+      </thead>
 
-            <tbody>
-                <tr>
-                    <td>Commits</td>
-                    <td *ngFor="let i of hours" class="text-right"
-                        [style.backgroundColor]="hour_colors[i]?.commits">
-                        {{ author_data?.at_hour?.commits[i] | number }}
-                    </td>
-                </tr>
-                <tr>
-                    <td>Lines Added</td>
-                    <td *ngFor="let i of hours" class="text-right"
-                        [style.backgroundColor]="hour_colors[i]?.insertions">
-                        {{ author_data?.at_hour?.insertions[i] | number }}
-                    </td>
-                </tr>
-                <tr>
-                    <td>Lines Removed</td>
-                    <td *ngFor="let i of hours" class="text-right"
-                        [style.backgroundColor]="hour_colors[i]?.deletions">
-                        {{ author_data?.at_hour?.deletions[i] | number }}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+      <tbody>
+        <tr>
+          <td>Commits</td>
+          <td
+            *ngFor="let i of hours"
+            class="text-right"
+            [style.backgroundColor]="hour_colors[i]?.commits"
+          >
+            {{ author_data?.at_hour?.commits[i] | number }}
+          </td>
+        </tr>
+        <tr>
+          <td>Lines Added</td>
+          <td
+            *ngFor="let i of hours"
+            class="text-right"
+            [style.backgroundColor]="hour_colors[i]?.insertions"
+          >
+            {{ author_data?.at_hour?.insertions[i] | number }}
+          </td>
+        </tr>
+        <tr>
+          <td>Lines Removed</td>
+          <td
+            *ngFor="let i of hours"
+            class="text-right"
+            [style.backgroundColor]="hour_colors[i]?.deletions"
+          >
+            {{ author_data?.at_hour?.deletions[i] | number }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card-footer text-center">
+    <strong>{{ author }}</strong>
+    <br />
+    has
+    <strong class="text-success">
+      {{ lines.lines | number }}
+    </strong>
+    <small class="text-muted">
+      {{ lines.lines / summary.lines | percent }}
+    </small>
+    lines in
+    <strong class="text-success">
+      {{ lines.files | number }}
+    </strong>
+    <small class="text-muted">
+      {{ lines.files / summary.files | percent }}
+    </small>
+    files
+  </div>
+
+  <div class="embed-responsive">
+    <div class="card-body">
+      <div echarts [options]="options" *ngFor="let options of charts"></div>
     </div>
-
-    <div class="card-footer text-center">
-        <strong>{{ author }}</strong>
-        <br>
-        has
-        <strong class="text-success">
-            {{ lines.lines | number }}
-        </strong>
-        <small class="text-muted">
-            {{ lines.lines / summary.lines | percent }}
-        </small>
-        lines in
-        <strong class="text-success">
-            {{ lines.files | number }}
-        </strong>
-        <small class="text-muted">
-            {{ lines.files / summary.files | percent }}
-        </small>
-        files
-    </div>
-
-    <div class="embed-responsive">
-        <div class="card-body">
-            <div echarts [options]="options" *ngFor="let options of charts">
-            </div>
-        </div>
-    </div>
+  </div>
 </div>

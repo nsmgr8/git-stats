@@ -1,53 +1,47 @@
 <div class="card mt-2">
-    <div class="card-header bg-secondary text-white">
-        Tags Statistics
-    </div>
+  <div class="card-header bg-secondary text-white">Tags Statistics</div>
 
-    <div class="table-responsive" *ngIf="tags?.length">
+  <div class="table-responsive" *ngIf="tags?.length">
+    <table class="table table-sm table-bordered table-striped mb-0">
+      <thead>
+        <tr class="table-active">
+          <th>Tag <small class="text-muted">commits</small></th>
+          <th>Created on</th>
+          <th>Authors <small class="text-muted">commits</small></th>
+        </tr>
+      </thead>
 
-        <table class="table table-sm table-bordered table-striped mb-0">
+      <tbody>
+        <tr *ngFor="let row of tags">
+          <th>
+            {{ row.tag }}
+            <sub class="text-muted">
+              {{ row.commits }}
+            </sub>
+          </th>
+          <td [style.width.px]="120">
+            {{ row.timestamp | date }}
+          </td>
+          <td>
+            <span
+              *ngFor="let col of row.authors.slice(0, 20); let odd = odd"
+              class="mr-2"
+            >
+              <span [ngClass]="{ 'text-secondary': odd }">
+                {{ col.author }}
+              </span>
+              <sub class="text-muted">
+                {{ col.commits }}
+              </sub>
+            </span>
+            <div *ngIf="row.authors.length > 20" class="text-info">
+              {{ row.authors.length - 20 }} more authors...
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-            <thead>
-                <tr class="table-active">
-                    <th>Tag <small class="text-muted">commits</small></th>
-                    <th>Created on</th>
-                    <th>Authors <small class="text-muted">commits</small></th>
-                </tr>
-            </thead>
-
-            <tbody>
-                <tr *ngFor="let row of tags">
-                    <th>
-                        {{ row.tag }}
-                        <sub class="text-muted">
-                            {{ row.commits }}
-                        </sub>
-                    </th>
-                    <td [style.width.px]="120">
-                        {{ row.timestamp | date }}
-                    </td>
-                    <td>
-                        <span *ngFor="let col of row.authors.slice(0, 20); let odd=odd"
-                            class="mr-2">
-                            <span [ngClass]="{'text-secondary': odd}">
-                                {{ col.author }}
-                            </span>
-                            <sub class="text-muted">
-                                {{ col.commits }}
-                            </sub>
-                        </span>
-                        <div *ngIf="row.authors.length > 20"
-                            class="text-info">
-                            {{ row.authors.length - 20 }} more authors...
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-    </div>
-
-    <div class="card-body" *ngIf="tags?.length === 0">
-        No tags available
-    </div>
+  <div class="card-body" *ngIf="tags?.length === 0">No tags available</div>
 </div>

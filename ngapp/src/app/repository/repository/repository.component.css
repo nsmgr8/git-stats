@@ -1,0 +1,18 @@
+.summary-card {
+  &.active {
+    .card {
+      transform: scale(1.1);
+    }
+  }
+
+  &:hover {
+    text-decoration: none;
+    .card {
+      transform: scale(1.2);
+    }
+  }
+
+  .card {
+    transition: all 0.5s;
+  }
+}

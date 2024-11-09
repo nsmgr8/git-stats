@@ -3,9 +3,10 @@ import { Component, Input } from '@angular/core';
 @Component({
   selector: 'app-order-toggle',
   templateUrl: './order-toggle.component.html',
-  styleUrls: ['./order-toggle.component.styl']
+  styleUrl: './order-toggle.component.css',
+  standalone: true,
 })
 export class OrderToggleComponent {
-    @Input() show = false;
-    @Input() direction = 1;
+  @Input() show = false;
+  @Input() direction = 1;
 }
